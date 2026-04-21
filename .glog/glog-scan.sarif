@@ -12,321 +12,91 @@
           "informationUri": "https://www.glog.ai",
           "rules": [
             {
-              "id": "0d11da4e-b696-3101-8e7c-6ad25efae3cb",
-              "name": "resources.rules.glog-csharp.csharp.cleartext-transport.http-url",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.glog-csharp.csharp.cleartext-transport.http-url"
-              },
-              "fullDescription": {
-                "text": "Potential cleartext transmission: HTTP URL literal."
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "note"
-              },
-              "help": {
-                "text": "Potential cleartext transmission: HTTP URL literal.",
-                "markdown": "Potential cleartext transmission: HTTP URL literal."
-              },
-              "properties": {
-                "security-severity": "5.0",
-                "precision": "very-high",
-                "tags": [
-                  "security"
-                ]
-              }
-            },
-            {
-              "id": "12ba7638-c369-3136-9afb-439211ad012a",
-              "name": "resources.rules.glog-csharp.csharp-hardcoded-secret-suspicious-name",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.glog-csharp.csharp-hardcoded-secret-suspicious-name"
-              },
-              "fullDescription": {
-                "text": "Possible hardcoded secret: variable name suggests secret material with a string literal value."
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "warning"
-              },
-              "help": {
-                "text": "Possible hardcoded secret: variable name suggests secret material with a string literal value.",
-                "markdown": "Possible hardcoded secret: variable name suggests secret material with a string literal value."
-              },
-              "properties": {
-                "security-severity": "5.0",
-                "precision": "very-high",
-                "tags": [
-                  "security"
-                ]
-              }
-            },
-            {
               "id": "139b57a1-f0a1-3c12-9979-b06cb4d72458",
-              "name": "resources.rules.glog-csharp.csharp.path-traversal.file-read",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.glog-csharp.csharp.path-traversal.file-read"
-              },
-              "fullDescription": {
-                "text": "Potential path traversal: file read with non-literal path. Validate/normalize input and enforce an allowlist or base directory."
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "warning"
-              },
+              "name": "\"Non-Literal Path File Read Vulnerability\"",
+              "helpUri": "https://www.glog.ai/",
               "help": {
-                "text": "Potential path traversal: file read with non-literal path. Validate/normalize input and enforce an allowlist or base directory.",
-                "markdown": "Potential path traversal: file read with non-literal path. Validate/normalize input and enforce an allowlist or base directory."
+                "text": "",
+                "markdown": "## Description\n\nNon-Literal Path File Read Vulnerability in C# refers to a situation where an application uses input from an upstream component to specify the pathname of a file to be read, but it does not neutralize or incorrectly neutralizes special elements within the pathname that can cause the pathname to resolve to a location that is outside of the restricted directory.\n\nThis can allow an attacker to read sensitive data or files from the system, leading to information disclosure.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, it is recommended to:\n\n- Always validate user input: Ensure that the file path does not contain any special characters or sequences that could potentially change the intended path of the file.\n- Use a whitelist of acceptable inputs: This can prevent an attacker from accessing unauthorized files.\n- Limit permissions: Ensure that the application runs with the least privileges necessary. This can limit the potential damage if an attacker is able to exploit this vulnerability.\n\n## Source Code Fix Recommendation\n\nHere is a simple way to fix the vulnerability in the provided code:\n\n```csharp\npublic string ReadAllText(string path)\n{\n    if (Path.IsPathRooted(path))\n    {\n        throw new ArgumentException(\"Absolute paths are not allowed\", nameof(path));\n    }\n\n    string fullPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, path));\n\n    if (!fullPath.StartsWith(AppDomain.CurrentDomain.BaseDirectory, StringComparison.OrdinalIgnoreCase))\n    {\n        throw new ArgumentException(\"Path traversal is not allowed\", nameof(path));\n    }\n\n    return File.ReadAllText(fullPath);\n}\n```\n\nThis code checks if the path is rooted (absolute) and if it is, it throws an exception. It also checks if the full path starts with the base directory of the application and if it doesn't, it throws an exception. This prevents path traversal attacks.\n\n## Library Dependencies\n\nThe code example requires the following library dependencies:\n\n- System\n- System.IO\n\n## References\n\n- [OWASP Path Traversal](https://owasp.org/www-community/attacks/Path_Traversal)\n- [CWE-23: Relative Path Traversal](https://cwe.mitre.org/data/definitions/23.html)"
               },
               "properties": {
+                "cwe": [
+                  {
+                    "id": "CWE-23",
+                    "url": "https://cwe.mitre.org/data/definitions/23.html"
+                  }
+                ],
+                "kind": "FAIL",
                 "security-severity": "5.0",
-                "precision": "very-high",
                 "tags": [
-                  "security"
+                  "security",
+                  "CWE-23"
                 ]
               }
             },
             {
               "id": "15732106-e50c-31bf-9dcb-b977f6b94b89",
-              "name": "resources.rules.csharp.generic-hide-remotely",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.csharp.generic-hide-remotely"
-              },
-              "fullDescription": {
-                "text": "Hiding payloads remotely. Leveraged to detect some staging and exfiltration."
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "error"
-              },
+              "name": "Remote Payload Concealment: Detection of Staging and Exfiltration Vulnerability",
+              "helpUri": "https://www.glog.ai/",
               "help": {
-                "text": "Hiding payloads remotely. Leveraged to detect some staging and exfiltration.",
-                "markdown": "Hiding payloads remotely. Leveraged to detect some staging and exfiltration."
+                "text": "",
+                "markdown": "## Description\n\n\"Remote Payload Concealment: Detection of Staging and Exfiltration Vulnerability\" is a security vulnerability that can occur in C# programming language when an attacker is able to remotely conceal a payload, stage it, and then exfiltrate data from the system. This can happen due to insecure coding practices, such as not properly validating user input, not using secure communication channels, or not properly managing and securing data.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, developers should:\n\n1. Validate all user input: All user input should be validated and sanitized before it is processed. This can help prevent injection attacks.\n\n2. Use secure communication channels: Data should be transmitted over secure channels, such as HTTPS, to prevent interception and tampering.\n\n3. Manage and secure data: Sensitive data should be encrypted, both at rest and in transit. Access to data should be controlled and logged.\n\n## Source Code Fix Recommendation\n\nThe specific vulnerability sink in the provided code is not specified. However, here are some general recommendations:\n\n1. Use parameterized queries or prepared statements to prevent SQL injection attacks.\n\n2. Use secure functions for handling data. Avoid using insecure functions that do not perform bounds checking.\n\n3. Encrypt sensitive data using strong encryption algorithms and manage keys securely.\n\n4. Implement proper error handling. Do not reveal sensitive information in error messages.\n\n## Library Dependencies\n\nThe specific library dependencies required by the code example are not specified. However, in general, a C# application might require the following libraries:\n\n- System\n- System.Data\n- System.Data.SqlClient\n- System.Net\n- System.IO\n- System.Text\n\n## OWASP and CWE Links\n\n- [OWASP Top 10](https://owasp.org/www-project-top-ten/)\n- [OWASP .NET Security Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/DotNet_Security_Cheat_Sheet.html)\n- [CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')](https://cwe.mitre.org/data/definitions/89.html)\n- [CWE-319: Cleartext Transmission of Sensitive Information](https://cwe.mitre.org/data/definitions/319.html)\n- [CWE-326: Inadequate Encryption Strength](https://cwe.mitre.org/data/definitions/326.html)\n\nPlease note that the specific CWE entry for this vulnerability might vary depending on the exact nature of the vulnerability."
               },
               "properties": {
+                "cwe": [
+                  {
+                    "id": "CWE-89",
+                    "url": "https://cwe.mitre.org/data/definitions/89.html"
+                  },
+                  {
+                    "id": "CWE-319",
+                    "url": "https://cwe.mitre.org/data/definitions/319.html"
+                  },
+                  {
+                    "id": "CWE-326",
+                    "url": "https://cwe.mitre.org/data/definitions/326.html"
+                  }
+                ],
+                "kind": "FAIL",
                 "security-severity": "5.0",
-                "precision": "very-high",
                 "tags": [
-                  "security"
-                ]
-              }
-            },
-            {
-              "id": "1ae3542a-a684-3699-a6f6-d64ee131593c",
-              "name": "resources.rules.csharp.generic-one-liners",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.csharp.generic-one-liners"
-              },
-              "fullDescription": {
-                "text": "Minified, compressed, obfuscated or any other form of unreadable files is excluded from the scan, because although a strong indicator of maliciousness, its FP rate is relatively higher. It is highly recommended to store such files in CDN, cloud buckets, etc. and keep the codebase readable."
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "note"
-              },
-              "help": {
-                "text": "Minified, compressed, obfuscated or any other form of unreadable files is excluded from the scan, because although a strong indicator of maliciousness, its FP rate is relatively higher. It is highly recommended to store such files in CDN, cloud buckets, etc. and keep the codebase readable.",
-                "markdown": "Minified, compressed, obfuscated or any other form of unreadable files is excluded from the scan, because although a strong indicator of maliciousness, its FP rate is relatively higher. It is highly recommended to store such files in CDN, cloud buckets, etc. and keep the codebase readable."
-              },
-              "properties": {
-                "security-severity": "5.0",
-                "precision": "very-high",
-                "tags": [
-                  "security"
-                ]
-              }
-            },
-            {
-              "id": "2570e78b-4a71-33c2-bd70-f20aa718b69d",
-              "name": "resources.rules.csharp.generic-one-liners",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.csharp.generic-one-liners"
-              },
-              "fullDescription": {
-                "text": "Minified, compressed, obfuscated or any other form of unreadable files is excluded from the scan, because although a strong indicator of maliciousness, its FP rate is relatively higher. It is highly recommended to store such files in CDN, cloud buckets, etc. and keep the codebase readable."
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "note"
-              },
-              "help": {
-                "text": "Minified, compressed, obfuscated or any other form of unreadable files is excluded from the scan, because although a strong indicator of maliciousness, its FP rate is relatively higher. It is highly recommended to store such files in CDN, cloud buckets, etc. and keep the codebase readable.",
-                "markdown": "Minified, compressed, obfuscated or any other form of unreadable files is excluded from the scan, because although a strong indicator of maliciousness, its FP rate is relatively higher. It is highly recommended to store such files in CDN, cloud buckets, etc. and keep the codebase readable."
-              },
-              "properties": {
-                "security-severity": "5.0",
-                "precision": "very-high",
-                "tags": [
-                  "security"
+                  "security",
+                  "CWE-89",
+                  "CWE-319",
+                  "CWE-326"
                 ]
               }
             },
             {
               "id": "27aae181-1117-39da-8b88-df3aea49ff73",
-              "name": "resources.rules.glog-csharp.csharp.path-traversal.file-read",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.glog-csharp.csharp.path-traversal.file-read"
-              },
-              "fullDescription": {
-                "text": "Potential path traversal: file read with non-literal path. Validate/normalize input and enforce an allowlist or base directory."
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "warning"
-              },
+              "name": "\"Possible Path Traversal: Non-Literal File Read Vulnerability\"",
+              "helpUri": "https://www.glog.ai/",
               "help": {
-                "text": "Potential path traversal: file read with non-literal path. Validate/normalize input and enforce an allowlist or base directory.",
-                "markdown": "Potential path traversal: file read with non-literal path. Validate/normalize input and enforce an allowlist or base directory."
+                "text": "",
+                "markdown": "## Description\n\n\"Possible Path Traversal: Non-Literal File Read Vulnerability\" is a security flaw that occurs when an application uses user-supplied input to read a file without properly validating the input. This can allow an attacker to read files that they should not have access to, by using special characters such as \"../\" to traverse to directories that are outside of the intended directory.\n\nIn C#, this vulnerability can occur when using the `StreamReader` class to read a file, if the stream is created from a path that includes user-supplied input.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, you should always validate user-supplied input before using it to read a file. This can include checking that the input does not contain special characters or sequences that could be used to traverse to unintended directories, and verifying that the resulting path is within the intended directory.\n\nYou should also consider using a safe method for reading files that automatically handles these checks, such as the `File.ReadLines` method in the `System.IO` namespace.\n\n## Source Code Fix Recommendation\n\nHere is an example of how you might modify the code to mitigate this vulnerability:\n\n```csharp\nstring userSuppliedPath = GetUserSuppliedPath();\n\n// Validate the user-supplied path.\nif (!IsValidPath(userSuppliedPath))\n{\n    throw new SecurityException(\"Invalid path.\");\n}\n\n// Use a safe method to read the file.\nIEnumerable<string> lines = File.ReadLines(userSuppliedPath);\n```\n\nIn this example, `GetUserSuppliedPath` is a method that gets the user-supplied path, and `IsValidPath` is a method that validates the path.\n\n## Library Dependencies\n\nThe code example requires the following library dependencies:\n\n- System.IO\n\n## OWASP Resources\n\n- [OWASP Path Traversal](https://owasp.org/www-community/attacks/Path_Traversal)\n- [OWASP .NET Security Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/DotNet_Security_Cheat_Sheet.html)\n\n## Common Weakness Enumeration (CWE)\n\n- [CWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')](https://cwe.mitre.org/data/definitions/22.html)"
               },
               "properties": {
+                "cwe": [
+                  {
+                    "id": "CWE-22",
+                    "url": "https://cwe.mitre.org/data/definitions/22.html"
+                  }
+                ],
+                "kind": "FAIL",
                 "security-severity": "5.0",
-                "precision": "very-high",
                 "tags": [
-                  "security"
-                ]
-              }
-            },
-            {
-              "id": "2f551c12-8043-3cb8-9030-ff1b90be0841",
-              "name": "resources.rules.glog-csharp.csharp-info-disclosure-connection-string",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.glog-csharp.csharp-info-disclosure-connection-string"
-              },
-              "fullDescription": {
-                "text": "Possible information disclosure: response includes a connection string or password literal."
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "warning"
-              },
-              "help": {
-                "text": "Possible information disclosure: response includes a connection string or password literal.",
-                "markdown": "Possible information disclosure: response includes a connection string or password literal."
-              },
-              "properties": {
-                "security-severity": "5.0",
-                "precision": "very-high",
-                "tags": [
-                  "security"
-                ]
-              }
-            },
-            {
-              "id": "31af6041-7410-3c94-8300-0637bcb53ac8",
-              "name": "resources.rules.glog-csharp.csharp-info-disclosure-connection-string",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.glog-csharp.csharp-info-disclosure-connection-string"
-              },
-              "fullDescription": {
-                "text": "Possible information disclosure: response includes a connection string or password literal."
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "warning"
-              },
-              "help": {
-                "text": "Possible information disclosure: response includes a connection string or password literal.",
-                "markdown": "Possible information disclosure: response includes a connection string or password literal."
-              },
-              "properties": {
-                "security-severity": "5.0",
-                "precision": "very-high",
-                "tags": [
-                  "security"
-                ]
-              }
-            },
-            {
-              "id": "32d8375a-fe51-3f95-9bef-957d977a9d62",
-              "name": "resources.rules.glog-csharp.csharp-info-disclosure-connection-string",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.glog-csharp.csharp-info-disclosure-connection-string"
-              },
-              "fullDescription": {
-                "text": "Possible information disclosure: response includes a connection string or password literal."
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "warning"
-              },
-              "help": {
-                "text": "Possible information disclosure: response includes a connection string or password literal.",
-                "markdown": "Possible information disclosure: response includes a connection string or password literal."
-              },
-              "properties": {
-                "security-severity": "5.0",
-                "precision": "very-high",
-                "tags": [
-                  "security"
-                ]
-              }
-            },
-            {
-              "id": "3586fd99-007b-3b57-8be7-3ae37dbc7a9d",
-              "name": "resources.rules.glog-csharp.csharp-info-disclosure-connection-string",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.glog-csharp.csharp-info-disclosure-connection-string"
-              },
-              "fullDescription": {
-                "text": "Possible information disclosure: response includes a connection string or password literal."
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "warning"
-              },
-              "help": {
-                "text": "Possible information disclosure: response includes a connection string or password literal.",
-                "markdown": "Possible information disclosure: response includes a connection string or password literal."
-              },
-              "properties": {
-                "security-severity": "5.0",
-                "precision": "very-high",
-                "tags": [
-                  "security"
-                ]
-              }
-            },
-            {
-              "id": "392afe70-d85f-35b9-baae-182fd9ac89fa",
-              "name": "resources.rules.glog-csharp.csharp-hardcoded-secret-suspicious-name",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.glog-csharp.csharp-hardcoded-secret-suspicious-name"
-              },
-              "fullDescription": {
-                "text": "Possible hardcoded secret: variable name suggests secret material with a string literal value."
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "warning"
-              },
-              "help": {
-                "text": "Possible hardcoded secret: variable name suggests secret material with a string literal value.",
-                "markdown": "Possible hardcoded secret: variable name suggests secret material with a string literal value."
-              },
-              "properties": {
-                "security-severity": "5.0",
-                "precision": "very-high",
-                "tags": [
-                  "security"
+                  "security",
+                  "CWE-22"
                 ]
               }
             },
             {
               "id": "452f321b-e065-3905-a07d-9bb188690f87",
-              "name": "resources.rules.glog-csharp.csharp-hardcoded-crypto-key",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.glog-csharp.csharp-hardcoded-crypto-key"
-              },
-              "fullDescription": {
-                "text": "Hardcoded cryptographic key or secret detected."
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "warning"
-              },
+              "name": "Detected hardcoded cryptographic key/secret vulnerability",
+              "helpUri": "https://www.glog.ai/",
               "help": {
-                "text": "Hardcoded cryptographic key or secret detected.",
-                "markdown": "Hardcoded cryptographic key or secret detected."
+                "text": "",
+                "markdown": "## Description\n\n\"Detected hardcoded cryptographic key/secret vulnerability\" is a security flaw that occurs when a developer hardcodes a secret cryptographic key into the application's source code. This is a serious vulnerability because if an attacker gains access to the source code, they can easily retrieve the hardcoded key and use it to decrypt sensitive data, impersonate the application, or perform other malicious activities.\n\nIn the provided code snippet, the `AppKey` is hardcoded as a constant string. If this key is used for cryptographic operations, it poses a security risk.\n\n## Mitigation Advice\n\nAvoid hardcoding cryptographic keys or secrets in your source code. Instead, use secure methods to store and retrieve these keys. For instance, you can use secure environment variables, or secure key management systems.\n\n## Source Code Fix Recommendation\n\nInstead of hardcoding the `AppKey`, you can store it in an environment variable:\n\n```csharp\nprivate static readonly string AppKey = Environment.GetEnvironmentVariable(\"APP_KEY\");\n```\n\nIn this case, you would need to set the `APP_KEY` environment variable to your key value before running the application.\n\n## Library Dependencies\n\nThe provided code snippet does not require any additional library dependencies to execute properly.\n\n## References\n\n- [OWASP: Cryptographic Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html)\n- [CWE-798: Use of Hard-coded Credentials](https://cwe.mitre.org/data/definitions/798.html)"
               },
               "properties": {
                 "cwe": [
@@ -335,237 +105,136 @@
                     "url": "https://cwe.mitre.org/data/definitions/798.html"
                   }
                 ],
+                "kind": "FAIL",
                 "security-severity": "5.0",
-                "precision": "very-high",
                 "tags": [
-                  "CWE-798",
-                  "security"
+                  "security",
+                  "CWE-798"
                 ]
               }
             },
             {
               "id": "4653a910-7702-305e-b8ab-fc8517c8196a",
-              "name": "resources.rules.glog-csharp.csharp-ssrf-httpclient-user-input",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.glog-csharp.csharp-ssrf-httpclient-user-input"
-              },
-              "fullDescription": {
-                "text": "Possible SSRF: user input flows into HttpClient request."
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "warning"
-              },
+              "name": "Potential SSRF Vulnerability: User Input Affects HttpClient Request",
+              "helpUri": "https://www.glog.ai/",
               "help": {
-                "text": "Possible SSRF: user input flows into HttpClient request.",
-                "markdown": "Possible SSRF: user input flows into HttpClient request."
+                "text": "",
+                "markdown": "## Description\n\nThe \"Potential SSRF Vulnerability: User Input Affects HttpClient Request\" vulnerability in C# programming language refers to a situation where an attacker can manipulate the `HttpClient` request by injecting malicious data into the user input. This can lead to Server Side Request Forgery (SSRF) attacks, where the attacker can make requests to internal resources, bypassing firewalls and accessing sensitive data.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, it is recommended to validate, filter, or sanitize user input before using it in the `HttpClient` request. Avoid using user input directly in the request. If it's necessary to use user input, ensure it's properly validated and sanitized to prevent malicious data injection.\n\n## Source Code Fix Recommendation\n\nHere is a simple fix for the vulnerability:\n\n```csharp\n// Assume user input is stored in variable userInput\nstring userInput = ...;\n\n// Validate and sanitize user input\nif (!Uri.TryCreate(userInput, UriKind.Absolute, out Uri validatedUri))\n{\n    throw new InvalidOperationException(\"Invalid URL\");\n}\n\n// Use validatedUri in HttpClient request\nusing var response = await _httpClient.PostAsync(validatedUri, requestContent, cancellationToken).ConfigureAwait(false);\n```\n\n## Library Dependencies\n\nThe code example requires the following library dependencies:\n\n- `System.Net.Http` for `HttpClient`\n- `System` for `Uri`\n\n## OWASP and CWE Resources\n\n- [OWASP Server Side Request Forgery Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html)\n- [CWE-918: Server-Side Request Forgery (SSRF)](https://cwe.mitre.org/data/definitions/918.html)"
               },
               "properties": {
+                "cwe": [
+                  {
+                    "id": "CWE-918",
+                    "url": "https://cwe.mitre.org/data/definitions/918.html"
+                  }
+                ],
+                "kind": "FAIL",
                 "security-severity": "5.0",
-                "precision": "very-high",
                 "tags": [
-                  "security"
-                ]
-              }
-            },
-            {
-              "id": "474767fc-ada2-362c-b625-2d0cc2516a44",
-              "name": "resources.rules.glog-csharp.csharp-info-disclosure-connection-string",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.glog-csharp.csharp-info-disclosure-connection-string"
-              },
-              "fullDescription": {
-                "text": "Possible information disclosure: response includes a connection string or password literal."
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "warning"
-              },
-              "help": {
-                "text": "Possible information disclosure: response includes a connection string or password literal.",
-                "markdown": "Possible information disclosure: response includes a connection string or password literal."
-              },
-              "properties": {
-                "security-severity": "5.0",
-                "precision": "very-high",
-                "tags": [
-                  "security"
+                  "security",
+                  "CWE-918"
                 ]
               }
             },
             {
               "id": "4c9921b1-98c4-3ff0-96b5-0ce7ae8d1d73",
-              "name": "resources.rules.glog-csharp.csharp.path-traversal.file-read",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.glog-csharp.csharp.path-traversal.file-read"
-              },
-              "fullDescription": {
-                "text": "Potential path traversal: file read with non-literal path. Validate/normalize input and enforce an allowlist or base directory."
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "warning"
-              },
+              "name": "\"Possible Path Traversal: Non-Literal File Read Vulnerability\"",
+              "helpUri": "https://www.glog.ai/",
               "help": {
-                "text": "Potential path traversal: file read with non-literal path. Validate/normalize input and enforce an allowlist or base directory.",
-                "markdown": "Potential path traversal: file read with non-literal path. Validate/normalize input and enforce an allowlist or base directory."
+                "text": "",
+                "markdown": "## Description\n\n\"Possible Path Traversal: Non-Literal File Read Vulnerability\" is a security flaw that occurs when an application uses user-supplied input to read a file without properly validating the input. This can allow an attacker to read files that they should not have access to, by using special characters such as \"../\" to traverse to directories that are outside of the intended directory.\n\nIn C#, this vulnerability can occur when using the `StreamReader` class to read a file, if the stream is created from a path that includes user-supplied input.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, you should always validate user-supplied input before using it to read a file. This can include checking that the input does not contain special characters or sequences that could be used to traverse to unintended directories, and verifying that the resulting path is within the intended directory.\n\nYou should also consider using a safe method for reading files that automatically handles these checks, such as the `File.ReadLines` method in the `System.IO` namespace.\n\n## Source Code Fix Recommendation\n\nHere is an example of how you might modify the code to mitigate this vulnerability:\n\n```csharp\nstring userSuppliedPath = GetUserSuppliedPath();\n\n// Validate the user-supplied path.\nif (!IsValidPath(userSuppliedPath))\n{\n    throw new SecurityException(\"Invalid path.\");\n}\n\n// Use a safe method to read the file.\nIEnumerable<string> lines = File.ReadLines(userSuppliedPath);\n```\n\nIn this example, `GetUserSuppliedPath` is a method that gets the user-supplied path, and `IsValidPath` is a method that validates the path.\n\n## Library Dependencies\n\nThe code example requires the following library dependencies:\n\n- System.IO\n\n## OWASP Resources\n\n- [OWASP Path Traversal](https://owasp.org/www-community/attacks/Path_Traversal)\n- [OWASP .NET Security Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/DotNet_Security_Cheat_Sheet.html)\n\n## Common Weakness Enumeration (CWE)\n\n- [CWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')](https://cwe.mitre.org/data/definitions/22.html)"
               },
               "properties": {
+                "cwe": [
+                  {
+                    "id": "CWE-22",
+                    "url": "https://cwe.mitre.org/data/definitions/22.html"
+                  }
+                ],
+                "kind": "FAIL",
                 "security-severity": "5.0",
-                "precision": "very-high",
                 "tags": [
-                  "security"
+                  "security",
+                  "CWE-22"
                 ]
               }
             },
             {
               "id": "4fcc1d4b-d9cd-391a-864c-275a0a788968",
-              "name": "resources.rules.glog-csharp.csharp.path-traversal.file-read",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.glog-csharp.csharp.path-traversal.file-read"
-              },
-              "fullDescription": {
-                "text": "Potential path traversal: file read with non-literal path. Validate/normalize input and enforce an allowlist or base directory."
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "warning"
-              },
+              "name": "\"Possible Path Traversal: Non-Literal File Read Vulnerability\"",
+              "helpUri": "https://www.glog.ai/",
               "help": {
-                "text": "Potential path traversal: file read with non-literal path. Validate/normalize input and enforce an allowlist or base directory.",
-                "markdown": "Potential path traversal: file read with non-literal path. Validate/normalize input and enforce an allowlist or base directory."
-              },
-              "properties": {
-                "security-severity": "5.0",
-                "precision": "very-high",
-                "tags": [
-                  "security"
-                ]
-              }
-            },
-            {
-              "id": "523270bd-a52f-3b86-87ed-8d5ce819d964",
-              "name": "resources.rules.glog-csharp.csharp.crypto.hardcoded-iv",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.glog-csharp.csharp.crypto.hardcoded-iv"
-              },
-              "fullDescription": {
-                "text": "Hardcoded cryptographic IV in code."
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "warning"
-              },
-              "help": {
-                "text": "Hardcoded cryptographic IV in code.",
-                "markdown": "Hardcoded cryptographic IV in code."
-              },
-              "properties": {
-                "security-severity": "5.0",
-                "precision": "very-high",
-                "tags": [
-                  "security"
-                ]
-              }
-            },
-            {
-              "id": "555531da-0856-33be-a1e3-03531101d27f",
-              "name": "resources.rules.glog-csharp.csharp-hardcoded-crypto-key",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.glog-csharp.csharp-hardcoded-crypto-key"
-              },
-              "fullDescription": {
-                "text": "Hardcoded cryptographic key or secret detected."
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "warning"
-              },
-              "help": {
-                "text": "Hardcoded cryptographic key or secret detected.",
-                "markdown": "Hardcoded cryptographic key or secret detected."
+                "text": "",
+                "markdown": "## Description\n\n\"Possible Path Traversal: Non-Literal File Read Vulnerability\" is a security flaw that occurs when an application uses user-supplied input to read a file without properly validating the input. This can allow an attacker to read files that they should not have access to, by using special characters such as \"../\" to traverse to directories that are outside of the intended directory.\n\nIn C#, this vulnerability can occur when using the `StreamReader` class to read a file, if the stream is created from a path that includes user-supplied input.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, you should always validate user-supplied input before using it to read a file. This can include checking that the input does not contain special characters or sequences that could be used to traverse to unintended directories, and verifying that the resulting path is within the intended directory.\n\nYou should also consider using a safe method for reading files that automatically handles these checks, such as the `File.ReadLines` method in the `System.IO` namespace.\n\n## Source Code Fix Recommendation\n\nHere is an example of how you might modify the code to mitigate this vulnerability:\n\n```csharp\nstring userSuppliedPath = GetUserSuppliedPath();\n\n// Validate the user-supplied path.\nif (!IsValidPath(userSuppliedPath))\n{\n    throw new SecurityException(\"Invalid path.\");\n}\n\n// Use a safe method to read the file.\nIEnumerable<string> lines = File.ReadLines(userSuppliedPath);\n```\n\nIn this example, `GetUserSuppliedPath` is a method that gets the user-supplied path, and `IsValidPath` is a method that validates the path.\n\n## Library Dependencies\n\nThe code example requires the following library dependencies:\n\n- System.IO\n\n## OWASP Resources\n\n- [OWASP Path Traversal](https://owasp.org/www-community/attacks/Path_Traversal)\n- [OWASP .NET Security Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/DotNet_Security_Cheat_Sheet.html)\n\n## Common Weakness Enumeration (CWE)\n\n- [CWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')](https://cwe.mitre.org/data/definitions/22.html)"
               },
               "properties": {
                 "cwe": [
                   {
-                    "id": "CWE-798",
-                    "url": "https://cwe.mitre.org/data/definitions/798.html"
+                    "id": "CWE-22",
+                    "url": "https://cwe.mitre.org/data/definitions/22.html"
                   }
                 ],
+                "kind": "FAIL",
                 "security-severity": "5.0",
-                "precision": "very-high",
                 "tags": [
-                  "CWE-798",
-                  "security"
+                  "security",
+                  "CWE-22"
                 ]
               }
             },
             {
               "id": "56614721-7cd2-3e7e-9d61-4d9b2e54f832",
-              "name": "resources.rules.csharp.generic-hide-remotely",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.csharp.generic-hide-remotely"
-              },
-              "fullDescription": {
-                "text": "Hiding payloads remotely. Leveraged to detect some staging and exfiltration."
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "error"
-              },
+              "name": "\"Remote Payload Concealment: Detection of Staging and Exfiltration Vulnerability\"",
+              "helpUri": "https://www.glog.ai/",
               "help": {
-                "text": "Hiding payloads remotely. Leveraged to detect some staging and exfiltration.",
-                "markdown": "Hiding payloads remotely. Leveraged to detect some staging and exfiltration."
+                "text": "",
+                "markdown": "## Description\n\n\"Remote Payload Concealment: Detection of Staging and Exfiltration Vulnerability\" is a security vulnerability that occurs when an application does not properly validate or sanitize data received from an untrusted source before processing it. This can lead to various types of attacks, such as code injection, data exfiltration, and remote code execution.\n\nIn the context of C# programming, this vulnerability can occur when an application uses unsafe methods or functions that do not properly validate or sanitize input data. This can lead to the execution of malicious code, unauthorized access to sensitive data, or other security breaches.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, it is recommended to:\n\n1. Always validate and sanitize input data: Never trust data received from an untrusted source. Always validate and sanitize it before processing.\n\n2. Use safe methods or functions: Avoid using unsafe methods or functions that do not properly validate or sanitize input data. Instead, use safe alternatives that do.\n\n3. Implement proper error handling: Implement proper error handling to prevent the application from crashing or behaving unpredictably in case of an error.\n\n4. Use security best practices: Follow security best practices for C# programming, such as using secure coding guidelines and performing regular code reviews and security audits.\n\n## Source Code Fix Recommendation\n\nWithout the specific code example, it's hard to provide a specific fix. However, here is a general recommendation:\n\n```csharp\n// BAD: Unsanitized input\nstring userInput = Console.ReadLine();\nstring query = \"SELECT * FROM users WHERE name = '\" + userInput + \"'\";\nexecuteQuery(query);\n\n// GOOD: Sanitized input\nstring userInput = Console.ReadLine();\nstring sanitizedInput = sanitizeInput(userInput); // Implement this function to sanitize input\nstring query = \"SELECT * FROM users WHERE name = '\" + sanitizedInput + \"'\";\nexecuteQuery(query);\n```\n\n## References\n\n- [OWASP .NET Security Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/DotNet_Security_Cheat_Sheet.html)\n- [CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')](https://cwe.mitre.org/data/definitions/89.html)\n\nPlease note that the provided links are active and accessible for anonymous users at the time of writing this report."
               },
               "properties": {
+                "cwe": [
+                  {
+                    "id": "CWE-89",
+                    "url": "https://cwe.mitre.org/data/definitions/89.html"
+                  }
+                ],
+                "kind": "FAIL",
                 "security-severity": "5.0",
-                "precision": "very-high",
                 "tags": [
-                  "security"
+                  "security",
+                  "CWE-89"
                 ]
               }
             },
             {
               "id": "69e43616-f506-3d5e-b176-dba24ec02063",
-              "name": "resources.rules.glog-csharp.csharp-info-disclosure-connection-string",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.glog-csharp.csharp-info-disclosure-connection-string"
-              },
-              "fullDescription": {
-                "text": "Possible information disclosure: response includes a connection string or password literal."
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "warning"
-              },
+              "name": "Potential Data Leak: Response Contains Connection String or Password Literal",
+              "helpUri": "https://www.glog.ai/",
               "help": {
-                "text": "Possible information disclosure: response includes a connection string or password literal.",
-                "markdown": "Possible information disclosure: response includes a connection string or password literal."
+                "text": "",
+                "markdown": "## Description\n\nThe vulnerability \"Potential Data Leak: Response Contains Connection String or Password Literal\" refers to a situation where sensitive information such as a connection string or password is included in the response data. This can occur when a developer inadvertently includes such information in the response, or when an error message containing such information is returned. This can lead to unauthorized access to the system or data, as an attacker can use this information to gain access.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, developers should ensure that sensitive information is not included in the response data. This can be achieved by:\n\n- Using parameterized queries or prepared statements to prevent SQL injection attacks.\n- Implementing proper error handling to prevent sensitive information from being included in error messages.\n- Encrypting sensitive data before sending it over the network.\n- Using secure coding practices to prevent the inclusion of sensitive information in the code.\n\n## Source Code Fix Recommendation\n\nThe provided code snippet is a batch command, not a C# code. However, if you have sensitive information in your C# code, you should remove it and use secure methods to store and retrieve it. For example, you can use the .NET Secret Manager to store sensitive data during the development process. \n\n```csharp\n// Bad practice\nstring connectionString = \"Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password=myPassword;\";\n\n// Good practice\nstring connectionString = Configuration.GetConnectionString(\"MyDatabase\");\n```\n\nIn the good practice example, the connection string is stored in a configuration file, not in the code. The .NET Secret Manager can be used to store the connection string securely during development.\n\n## Library Dependencies\n\nThe provided code snippet is a batch command, not a C# code. Therefore, it does not have any library dependencies.\n\n## References\n\n- [OWASP Top 10-2017 A3-Sensitive Data Exposure](https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure)\n- [CWE-200: Information Exposure](https://cwe.mitre.org/data/definitions/200.html)"
               },
               "properties": {
+                "cwe": [
+                  {
+                    "id": "CWE-200",
+                    "url": "https://cwe.mitre.org/data/definitions/200.html"
+                  }
+                ],
+                "kind": "FAIL",
                 "security-severity": "5.0",
-                "precision": "very-high",
                 "tags": [
-                  "security"
+                  "security",
+                  "CWE-200"
                 ]
               }
             },
             {
               "id": "71f08912-b9e7-3ea8-846a-54715c7014c2",
-              "name": "resources.rules.glog-csharp.csharp-hardcoded-crypto-key",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.glog-csharp.csharp-hardcoded-crypto-key"
-              },
-              "fullDescription": {
-                "text": "Hardcoded cryptographic key or secret detected."
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "warning"
-              },
+              "name": "Detected Hardcoded Cryptographic Key/Secret Vulnerability",
+              "helpUri": "https://www.glog.ai/",
               "help": {
-                "text": "Hardcoded cryptographic key or secret detected.",
-                "markdown": "Hardcoded cryptographic key or secret detected."
+                "text": "",
+                "markdown": "## Description\n\n\"Detected Hardcoded Cryptographic Key/Secret Vulnerability\" is a security flaw that occurs when a developer hardcodes a secret cryptographic key into the source code. This is a serious vulnerability because if an attacker gains access to the source code, they can easily retrieve the key and use it to decrypt sensitive data, impersonate the application, or perform other malicious activities.\n\nIn the provided C# code, the `SystemRestoreKeyPath` is a hardcoded string that could potentially be used as a cryptographic key or secret. If this string is used for encryption or decryption in the application, it poses a security risk.\n\n## Mitigation Advice\n\nAvoid hardcoding cryptographic keys or secrets in your source code. Instead, use secure methods to store and retrieve these keys. For example, you can use secure server environments, key management systems, or secure vault services.\n\n## Source Code Fix Recommendation\n\nInstead of hardcoding the `SystemRestoreKeyPath`, you can store it in a secure location and retrieve it when needed. Here is an example of how you can do this using .NET's built-in configuration system:\n\n```csharp\npublic class Startup\n{\n    public Startup(IConfiguration configuration)\n    {\n        Configuration = configuration;\n    }\n\n    public IConfiguration Configuration { get; }\n\n    // This method gets called by the runtime. Use this method to add services to the container.\n    public void ConfigureServices(IServiceCollection services)\n    {\n        services.Configure<SystemRestoreOptions>(Configuration.GetSection(\"SystemRestore\"));\n    }\n}\n```\n\nIn the `appsettings.json` file, you can store the `SystemRestoreKeyPath`:\n\n```json\n{\n  \"SystemRestore\": {\n    \"KeyPath\": \"SOFTWARE\\\\Microsoft\\\\Windows NT\\\\CurrentVersion\\\\SystemRestore\"\n  }\n}\n```\n\nThen, you can access the `KeyPath` in your code like this:\n\n```csharp\npublic class MyClass\n{\n    private readonly string _systemRestoreKeyPath;\n\n    public MyClass(IOptions<SystemRestoreOptions> options)\n    {\n        _systemRestoreKeyPath = options.Value.KeyPath;\n    }\n}\n```\n\n## Library Dependencies\n\nThe provided code does not require any additional library dependencies to execute properly.\n\n## OWASP and CWE Links\n\n- [OWASP .NET Security Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/DotNet_Security_Cheat_Sheet.html)\n- [CWE-798: Use of Hard-coded Credentials](https://cwe.mitre.org/data/definitions/798.html)"
               },
               "properties": {
                 "cwe": [
@@ -574,59 +243,26 @@
                     "url": "https://cwe.mitre.org/data/definitions/798.html"
                   }
                 ],
+                "kind": "FAIL",
                 "security-severity": "5.0",
-                "precision": "very-high",
                 "tags": [
-                  "CWE-798",
-                  "security"
+                  "security",
+                  "CWE-798"
                 ]
               }
             },
             {
               "id": "767574ae-741b-35b4-8da4-4ee9f907daa0",
-              "name": "resources.rules.csharp.generic-one-liners",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.csharp.generic-one-liners"
-              },
-              "fullDescription": {
-                "text": "Minified, compressed, obfuscated or any other form of unreadable files is excluded from the scan, because although a strong indicator of maliciousness, its FP rate is relatively higher. It is highly recommended to store such files in CDN, cloud buckets, etc. and keep the codebase readable."
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "note"
-              },
+              "name": "Exclusion of Unreadable Files from Scans Due to High False Positive Rate; Recommendation for Storage in CDN or Cloud Buckets",
+              "helpUri": "https://www.glog.ai/",
               "help": {
-                "text": "Minified, compressed, obfuscated or any other form of unreadable files is excluded from the scan, because although a strong indicator of maliciousness, its FP rate is relatively higher. It is highly recommended to store such files in CDN, cloud buckets, etc. and keep the codebase readable.",
-                "markdown": "Minified, compressed, obfuscated or any other form of unreadable files is excluded from the scan, because although a strong indicator of maliciousness, its FP rate is relatively higher. It is highly recommended to store such files in CDN, cloud buckets, etc. and keep the codebase readable."
+                "text": "",
+                "markdown": "## Description\n\nThe vulnerability \"Exclusion of Unreadable Files from Scans Due to High False Positive Rate; Recommendation for Storage in CDN or Cloud Buckets\" refers to a situation where certain files are excluded from security scans due to their unreadability, leading to a high rate of false positives. This can occur when files are stored in a Content Delivery Network (CDN) or cloud buckets, which may not be properly configured for security scanning. In the context of C# programming, this vulnerability can lead to unauthorized access or manipulation of sensitive data.\n\nThe provided code example is a PowerShell script that changes the ownership and permissions of a file, removes an old version of the file if it exists, renames the file, and then stops a process. This script could potentially be exploited if an attacker is able to manipulate the file paths or process names.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, it is recommended to:\n\n- Ensure that all files, regardless of their readability, are included in security scans.\n- Store sensitive data in secure storage solutions, such as encrypted databases or secure cloud storage services.\n- Validate and sanitize all inputs to prevent path traversal or command injection attacks.\n- Use least privilege principle, i.e., only grant the necessary permissions that a user or process needs to perform its function.\n\n## Source Code Fix Recommendation\n\nThe provided code example can be made more secure by validating the file paths and process names, and by running the script with the least necessary privileges. However, without more context, it's difficult to provide a specific code fix.\n\n## Library Dependencies\n\nThe provided code example is a PowerShell script, so it doesn't have any C# library dependencies.\n\n## OWASP and CWE Links\n\n- [OWASP Top 10 Security Risks](https://owasp.org/www-project-top-ten/)\n- [CWE for Unrestricted Upload of File with Dangerous Type](https://cwe.mitre.org/data/definitions/434.html)\n\nPlease note that these links are subject to change and may not be accessible in the future."
               },
               "properties": {
+                "cwe": [],
+                "kind": "FAIL",
                 "security-severity": "5.0",
-                "precision": "very-high",
-                "tags": [
-                  "security"
-                ]
-              }
-            },
-            {
-              "id": "77b01fd7-b154-3d5f-b4e1-63dfa52735af",
-              "name": "resources.rules.glog-csharp.csharp.crypto.hardcoded-iv",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.glog-csharp.csharp.crypto.hardcoded-iv"
-              },
-              "fullDescription": {
-                "text": "Hardcoded cryptographic IV in code."
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "warning"
-              },
-              "help": {
-                "text": "Hardcoded cryptographic IV in code.",
-                "markdown": "Hardcoded cryptographic IV in code."
-              },
-              "properties": {
-                "security-severity": "5.0",
-                "precision": "very-high",
                 "tags": [
                   "security"
                 ]
@@ -634,349 +270,108 @@
             },
             {
               "id": "78369187-0238-3472-81db-fe65d7746188",
-              "name": "resources.rules.glog-csharp.csharp-info-disclosure-connection-string",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.glog-csharp.csharp-info-disclosure-connection-string"
-              },
-              "fullDescription": {
-                "text": "Possible information disclosure: response includes a connection string or password literal."
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "warning"
-              },
+              "name": "Potential Data Leak: Response Contains Connection String or Password Literal",
+              "helpUri": "https://www.glog.ai/",
               "help": {
-                "text": "Possible information disclosure: response includes a connection string or password literal.",
-                "markdown": "Possible information disclosure: response includes a connection string or password literal."
+                "text": "",
+                "markdown": "## Description\n\n\"Potential Data Leak: Response Contains Connection String or Password Literal\" is a vulnerability that occurs when sensitive data such as connection strings or password literals are included in the response of a C# application. This can lead to unauthorized access to the system or database, as attackers can use this information to gain access to sensitive resources.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, it is recommended to avoid including sensitive data in the response. Instead, use secure methods to store and retrieve this data, such as using secure environment variables or secure configuration files. Also, ensure that error messages do not reveal any sensitive information.\n\n## Source Code Fix Recommendation\n\nThe provided code snippet is a batch command, not a C# code. However, if you have a similar situation in C#, you should avoid including sensitive data in the response. Here is a general example of how to avoid this:\n\n```csharp\npublic IActionResult Index()\n{\n    try\n    {\n        // Your code here\n    }\n    catch (Exception ex)\n    {\n        // Log the error details but do not include them in the response\n        _logger.LogError(ex, \"An error occurred.\");\n        return StatusCode(500, \"An error occurred. Please try again later.\");\n    }\n}\n```\n\nIn this example, the error details are logged but not included in the response. This prevents potential data leaks.\n\n## Library Dependencies\n\nThe provided code snippet is a batch command, not a C# code. Therefore, it does not have any library dependencies.\n\n## References\n\n- [OWASP Top 10 - A3:2017-Sensitive Data Exposure](https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure)\n- [CWE-209: Information Exposure Through an Error Message](https://cwe.mitre.org/data/definitions/209.html)"
               },
               "properties": {
+                "cwe": [
+                  {
+                    "id": "CWE-209",
+                    "url": "https://cwe.mitre.org/data/definitions/209.html"
+                  }
+                ],
+                "kind": "FAIL",
                 "security-severity": "5.0",
-                "precision": "very-high",
                 "tags": [
-                  "security"
-                ]
-              }
-            },
-            {
-              "id": "845c8584-8fc9-383d-99ad-a1788a5b46f2",
-              "name": "resources.rules.glog-csharp.csharp.cleartext-transport.http-url",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.glog-csharp.csharp.cleartext-transport.http-url"
-              },
-              "fullDescription": {
-                "text": "Potential cleartext transmission: HTTP URL literal."
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "note"
-              },
-              "help": {
-                "text": "Potential cleartext transmission: HTTP URL literal.",
-                "markdown": "Potential cleartext transmission: HTTP URL literal."
-              },
-              "properties": {
-                "security-severity": "5.0",
-                "precision": "very-high",
-                "tags": [
-                  "security"
-                ]
-              }
-            },
-            {
-              "id": "8b4997f1-c619-36e1-a3a7-e8bc53b51f59",
-              "name": "resources.rules.glog-csharp.csharp.cleartext-transport.http-url",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.glog-csharp.csharp.cleartext-transport.http-url"
-              },
-              "fullDescription": {
-                "text": "Potential cleartext transmission: HTTP URL literal."
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "note"
-              },
-              "help": {
-                "text": "Potential cleartext transmission: HTTP URL literal.",
-                "markdown": "Potential cleartext transmission: HTTP URL literal."
-              },
-              "properties": {
-                "security-severity": "5.0",
-                "precision": "very-high",
-                "tags": [
-                  "security"
-                ]
-              }
-            },
-            {
-              "id": "8daaf129-ea97-32a8-9797-c6a15c944353",
-              "name": "resources.rules.glog-csharp.csharp-hardcoded-secret-suspicious-name",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.glog-csharp.csharp-hardcoded-secret-suspicious-name"
-              },
-              "fullDescription": {
-                "text": "Possible hardcoded secret: variable name suggests secret material with a string literal value."
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "warning"
-              },
-              "help": {
-                "text": "Possible hardcoded secret: variable name suggests secret material with a string literal value.",
-                "markdown": "Possible hardcoded secret: variable name suggests secret material with a string literal value."
-              },
-              "properties": {
-                "security-severity": "5.0",
-                "precision": "very-high",
-                "tags": [
-                  "security"
+                  "security",
+                  "CWE-209"
                 ]
               }
             },
             {
               "id": "96eeba81-f9ed-3b57-8167-5e2cee2fc553",
-              "name": "resources.rules.glog-csharp.csharp-info-disclosure-connection-string",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.glog-csharp.csharp-info-disclosure-connection-string"
-              },
-              "fullDescription": {
-                "text": "Possible information disclosure: response includes a connection string or password literal."
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "warning"
-              },
+              "name": "Potential Data Leak: Response Contains Connection String or Password Literal",
+              "helpUri": "https://www.glog.ai/",
               "help": {
-                "text": "Possible information disclosure: response includes a connection string or password literal.",
-                "markdown": "Possible information disclosure: response includes a connection string or password literal."
+                "text": "",
+                "markdown": "## Description\n\nThe vulnerability \"Potential Data Leak: Response Contains Connection String or Password Literal\" refers to a situation where sensitive information such as connection strings or password literals are included in the response data. This can occur when exceptions are logged with their messages, which might contain sensitive data. In the provided C# code, the exception message is being logged, which could potentially contain sensitive data.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, you should avoid logging sensitive data. If you need to log exceptions, consider logging only the exception type or sanitizing the exception message to remove any sensitive data. \n\n## Source Code Fix Recommendation\n\nInstead of logging the exception message directly, you could log the exception type:\n\n```csharp\n_logService.Log(LogLevel.Debug, $\"OTS detection: Explorer token approach failed: {ex.GetType().Name}\");\n```\n\n## Library Dependencies\n\nThe code example does not provide enough context to determine the exact library dependencies. However, it seems to be using a logging service, which might be part of a logging library such as `Microsoft.Extensions.Logging`.\n\n## References\n\n- [OWASP Top 10-2017 A3-Sensitive Data Exposure](https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure)\n- [CWE-209: Information Exposure Through an Error Message](https://cwe.mitre.org/data/definitions/209.html)"
               },
               "properties": {
+                "cwe": [
+                  {
+                    "id": "CWE-209",
+                    "url": "https://cwe.mitre.org/data/definitions/209.html"
+                  }
+                ],
+                "kind": "FAIL",
                 "security-severity": "5.0",
-                "precision": "very-high",
                 "tags": [
-                  "security"
-                ]
-              }
-            },
-            {
-              "id": "a3e1f4fe-a32a-3fed-8bbd-7a2dd23ccfff",
-              "name": "resources.rules.glog-csharp.csharp-hardcoded-secret-suspicious-name",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.glog-csharp.csharp-hardcoded-secret-suspicious-name"
-              },
-              "fullDescription": {
-                "text": "Possible hardcoded secret: variable name suggests secret material with a string literal value."
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "warning"
-              },
-              "help": {
-                "text": "Possible hardcoded secret: variable name suggests secret material with a string literal value.",
-                "markdown": "Possible hardcoded secret: variable name suggests secret material with a string literal value."
-              },
-              "properties": {
-                "security-severity": "5.0",
-                "precision": "very-high",
-                "tags": [
-                  "security"
+                  "security",
+                  "CWE-209"
                 ]
               }
             },
             {
               "id": "a5839118-0edd-3a50-a48b-3908a0210574",
-              "name": "resources.rules.glog-csharp.csharp.rfi.remote-load",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.glog-csharp.csharp.rfi.remote-load"
-              },
-              "fullDescription": {
-                "text": "Potential remote file inclusion: loading from a non-literal URL."
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "warning"
-              },
+              "name": "Possible Non-Literal URL Remote File Inclusion Vulnerability",
+              "helpUri": "https://www.glog.ai/",
               "help": {
-                "text": "Potential remote file inclusion: loading from a non-literal URL.",
-                "markdown": "Potential remote file inclusion: loading from a non-literal URL."
+                "text": "",
+                "markdown": "## Description\n\nA Possible Non-Literal URL Remote File Inclusion Vulnerability in C# occurs when an application uses input from an upstream component to specify the location of an external file or resource that should be included or loaded by the application. If the input is not properly validated, an attacker can manipulate the input to point to an arbitrary URL, leading to potential remote file inclusion attacks.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, it is recommended to:\n\n1. Avoid using user-supplied input to form a file or resource location.\n2. If it is necessary to use user-supplied input, validate the input rigorously. This could include testing for valid file types and rejecting any input that contains special characters or sequences that could be used to traverse directories.\n3. Use a list of allowed inputs and reject any input that is not on the list.\n4. Use an application firewall to detect and block attempts to exploit this vulnerability.\n\n## Source Code Fix Recommendation\n\nInstead of loading the XML document from a path specified by user input, consider loading it from a fixed path or a path that is constructed from trusted inputs. For example:\n\n```csharp\nstring trustedPath = \"/path/to/trusted/location/\";\nawait Task.Run(() => XDocument.Load(trustedPath + \"yourFile.xml\"));\n```\n\n## Library Dependencies\n\nThe code example requires the following library dependencies:\n\n- System.Xml.Linq for the `XDocument` class.\n- System.Threading.Tasks for the `Task` class.\n\n## References\n\n- [OWASP - File Inclusion Vulnerability](https://owasp.org/www-community/vulnerabilities/Unrestricted_File_Upload)\n- [CWE-98: Improper Control of Filename for Include/Require Statement in PHP Program ('PHP File Inclusion')](https://cwe.mitre.org/data/definitions/98.html)"
               },
               "properties": {
+                "cwe": [
+                  {
+                    "id": "CWE-98",
+                    "url": "https://cwe.mitre.org/data/definitions/98.html"
+                  }
+                ],
+                "kind": "FAIL",
                 "security-severity": "5.0",
-                "precision": "very-high",
                 "tags": [
-                  "security"
-                ]
-              }
-            },
-            {
-              "id": "a6419007-3441-3ffe-b391-9c6c43ab711c",
-              "name": "resources.rules.glog-csharp.csharp-info-disclosure-connection-string",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.glog-csharp.csharp-info-disclosure-connection-string"
-              },
-              "fullDescription": {
-                "text": "Possible information disclosure: response includes a connection string or password literal."
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "warning"
-              },
-              "help": {
-                "text": "Possible information disclosure: response includes a connection string or password literal.",
-                "markdown": "Possible information disclosure: response includes a connection string or password literal."
-              },
-              "properties": {
-                "security-severity": "5.0",
-                "precision": "very-high",
-                "tags": [
-                  "security"
-                ]
-              }
-            },
-            {
-              "id": "ab909335-8f16-30c8-810d-2b909ed1de0a",
-              "name": "resources.rules.csharp.csharp-obfuscation-methods-masking",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.csharp.csharp-obfuscation-methods-masking"
-              },
-              "fullDescription": {
-                "text": "Obfuscation by reconstruction of hardcoded data."
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "warning"
-              },
-              "help": {
-                "text": "Obfuscation by reconstruction of hardcoded data.",
-                "markdown": "Obfuscation by reconstruction of hardcoded data."
-              },
-              "properties": {
-                "security-severity": "5.0",
-                "precision": "very-high",
-                "tags": [
-                  "security"
+                  "security",
+                  "CWE-98"
                 ]
               }
             },
             {
               "id": "bffab513-7456-3099-a90e-6c8ab07b246e",
-              "name": "resources.rules.glog-csharp.csharp.crypto.hardcoded-iv",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.glog-csharp.csharp.crypto.hardcoded-iv"
-              },
-              "fullDescription": {
-                "text": "Hardcoded cryptographic IV in code."
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "warning"
-              },
+              "name": "Fixed Cryptographic Initialization Vector Vulnerability",
+              "helpUri": "https://www.glog.ai/",
               "help": {
-                "text": "Hardcoded cryptographic IV in code.",
-                "markdown": "Hardcoded cryptographic IV in code."
+                "text": "",
+                "markdown": "## Description\n\nFixed Cryptographic Initialization Vector Vulnerability refers to the insecure practice of using a fixed or hard-coded initialization vector (IV) in cryptographic operations. In C#, this vulnerability can occur when the `System.Security.Cryptography` namespace is used improperly. The initialization vector is a piece of data that is fed into the encryption algorithm to randomize the output, making it more difficult for an attacker to guess the original input. If the IV is fixed or predictable, it can lead to a reduction in the randomness of the output, making the encryption easier to break.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, it is recommended to generate a new, random IV for each encryption operation. The IV does not need to be secret, and it can be transmitted in plain text along with the ciphertext. However, it should be unpredictable and unique for each encryption operation.\n\n## Source Code Fix Recommendation\n\nHere is an example of how to generate a random IV in C#:\n\n```csharp\nusing System.Security.Cryptography;\n\npublic byte[] EncryptStringToBytes_Aes(string plainText, byte[] Key)\n{\n    // Check arguments.\n    if (plainText == null || plainText.Length <= 0)\n        throw new ArgumentNullException(\"plainText\");\n    if (Key == null || Key.Length <= 0)\n        throw new ArgumentNullException(\"Key\");\n\n    byte[] encrypted;\n\n    // Create an Aes object\n    // with the specified key and IV.\n    using (Aes aesAlg = Aes.Create())\n    {\n        aesAlg.Key = Key;\n        aesAlg.GenerateIV(); // Generate a new IV\n\n        // Create an encryptor to perform the stream transform.\n        ICryptoTransform encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);\n\n        // ... (rest of the encryption code)\n    }\n\n    return encrypted;\n}\n```\n\nIn this code, `Aes.GenerateIV()` is used to generate a new, random IV for each encryption operation.\n\n## Library Dependencies\n\n- System.Security.Cryptography\n\n## References\n\n- [OWASP - Insecure Cryptographic Storage](https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure)\n- [CWE-329: Not Using a Random IV with CBC Mode](https://cwe.mitre.org/data/definitions/329.html)"
               },
               "properties": {
+                "cwe": [
+                  {
+                    "id": "CWE-329",
+                    "url": "https://cwe.mitre.org/data/definitions/329.html"
+                  }
+                ],
+                "kind": "FAIL",
                 "security-severity": "5.0",
-                "precision": "very-high",
                 "tags": [
-                  "security"
-                ]
-              }
-            },
-            {
-              "id": "c5e3e1fb-0820-39f5-9a00-4bbf8454d629",
-              "name": "resources.rules.glog-csharp.csharp-hardcoded-secret-suspicious-name",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.glog-csharp.csharp-hardcoded-secret-suspicious-name"
-              },
-              "fullDescription": {
-                "text": "Possible hardcoded secret: variable name suggests secret material with a string literal value."
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "warning"
-              },
-              "help": {
-                "text": "Possible hardcoded secret: variable name suggests secret material with a string literal value.",
-                "markdown": "Possible hardcoded secret: variable name suggests secret material with a string literal value."
-              },
-              "properties": {
-                "security-severity": "5.0",
-                "precision": "very-high",
-                "tags": [
-                  "security"
-                ]
-              }
-            },
-            {
-              "id": "cbc28362-913f-344c-9c2e-53242c4ed532",
-              "name": "resources.rules.glog-csharp.csharp.cleartext-transport.http-url",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.glog-csharp.csharp.cleartext-transport.http-url"
-              },
-              "fullDescription": {
-                "text": "Potential cleartext transmission: HTTP URL literal."
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "note"
-              },
-              "help": {
-                "text": "Potential cleartext transmission: HTTP URL literal.",
-                "markdown": "Potential cleartext transmission: HTTP URL literal."
-              },
-              "properties": {
-                "security-severity": "5.0",
-                "precision": "very-high",
-                "tags": [
-                  "security"
+                  "security",
+                  "CWE-329"
                 ]
               }
             },
             {
               "id": "e3c61fb4-b643-38e8-899b-076ca5ad17b0",
-              "name": "resources.rules.csharp.generic-one-liners",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.csharp.generic-one-liners"
-              },
-              "fullDescription": {
-                "text": "Minified, compressed, obfuscated or any other form of unreadable files is excluded from the scan, because although a strong indicator of maliciousness, its FP rate is relatively higher. It is highly recommended to store such files in CDN, cloud buckets, etc. and keep the codebase readable."
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "note"
-              },
+              "name": "Exclusion of Unreadable Files from Scans Due to High False Positive Rate; Recommendation for Storage in CDN or Cloud Buckets",
+              "helpUri": "https://www.glog.ai/",
               "help": {
-                "text": "Minified, compressed, obfuscated or any other form of unreadable files is excluded from the scan, because although a strong indicator of maliciousness, its FP rate is relatively higher. It is highly recommended to store such files in CDN, cloud buckets, etc. and keep the codebase readable.",
-                "markdown": "Minified, compressed, obfuscated or any other form of unreadable files is excluded from the scan, because although a strong indicator of maliciousness, its FP rate is relatively higher. It is highly recommended to store such files in CDN, cloud buckets, etc. and keep the codebase readable."
+                "text": "",
+                "markdown": "## Description\n\nThe vulnerability in question pertains to the exclusion of unreadable files from scans due to a high false positive rate. This can occur when a C# application is scanning files for potential threats or vulnerabilities, but excludes files that it cannot read. This can lead to a high rate of false positives, as the application may incorrectly identify these unreadable files as threats. Additionally, the recommendation for storage in CDN or Cloud Buckets suggests that these unreadable files may be stored in a less secure environment, further increasing the risk of a security breach.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, it is recommended to:\n\n1. Ensure that all files, regardless of their readability, are included in scans. This can help to reduce the rate of false positives and ensure that all potential threats are identified.\n\n2. Store files in a secure environment, such as a Content Delivery Network (CDN) or Cloud Buckets. These environments often have built-in security measures that can help to protect files from unauthorized access.\n\n3. Implement proper error handling and logging mechanisms to identify and address any issues that may arise during the scanning process.\n\n## Source Code Fix Recommendation\n\nThe source code provided appears to be a PowerShell script, not C# code. However, the general recommendation for fixing this vulnerability in C# would be to ensure that all files are included in scans and that they are stored in a secure environment. This may involve modifying the scanning process to include unreadable files and moving files to a CDN or Cloud Bucket.\n\n## Library Dependencies\n\nThe PowerShell script provided does not require any additional library dependencies to execute properly.\n\n## OWASP and CWE Resources\n\n- [OWASP Top 10](https://owasp.org/www-project-top-ten/)\n- [CWE for Improper Input Validation](https://cwe.mitre.org/data/definitions/20.html)\n\nPlease note that these links are subject to change and may not be active at the time of viewing."
               },
               "properties": {
+                "cwe": [],
+                "kind": "FAIL",
                 "security-severity": "5.0",
-                "precision": "very-high",
-                "tags": [
-                  "security"
-                ]
-              }
-            },
-            {
-              "id": "f46c0835-ef2a-3283-b148-b4a14aa5c8aa",
-              "name": "resources.rules.glog-csharp.csharp-info-disclosure-connection-string",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.glog-csharp.csharp-info-disclosure-connection-string"
-              },
-              "fullDescription": {
-                "text": "Possible information disclosure: response includes a connection string or password literal."
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "warning"
-              },
-              "help": {
-                "text": "Possible information disclosure: response includes a connection string or password literal.",
-                "markdown": "Possible information disclosure: response includes a connection string or password literal."
-              },
-              "properties": {
-                "security-severity": "5.0",
-                "precision": "very-high",
                 "tags": [
                   "security"
                 ]
@@ -984,76 +379,52 @@
             },
             {
               "id": "f7dbc887-3728-3201-ad8c-4fd669477b7b",
-              "name": "resources.rules.glog-csharp.csharp.lfi.file-write",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.glog-csharp.csharp.lfi.file-write"
-              },
-              "fullDescription": {
-                "text": "Potential unsafe file write using user-controlled path. Validate the destination and avoid using user-supplied filenames directly."
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "warning"
-              },
+              "name": "\"User-Controlled Path Vulnerability in File Writing\"",
+              "helpUri": "https://www.glog.ai/",
               "help": {
-                "text": "Potential unsafe file write using user-controlled path. Validate the destination and avoid using user-supplied filenames directly.",
-                "markdown": "Potential unsafe file write using user-controlled path. Validate the destination and avoid using user-supplied filenames directly."
+                "text": "",
+                "markdown": "## Description\n\nUser-Controlled Path Vulnerability in File Writing is a security flaw that occurs when a program allows the user to control the path or name of a file that is written. This can lead to a variety of security issues, including unauthorized file access, data corruption, and even code execution. In the context of C# programming, this vulnerability can occur when using methods such as `File.WriteAllText()` where the file path is influenced by user input.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, it is recommended to avoid using user input to determine file paths or names directly. If it is necessary to use user input, it should be properly sanitized and validated to ensure it does not contain any malicious values. Additionally, it is recommended to use secure functions that do not allow path traversal or manipulation.\n\n## Source Code Fix Recommendation\n\nIn the provided code snippet, the `LogPath` variable is used as the file path in the `File.WriteAllText()` method. If this variable is influenced by user input, it could lead to a User-Controlled Path Vulnerability. To fix this, you should ensure that the `LogPath` variable is not directly influenced by user input or is properly sanitized and validated.\n\n```csharp\n// Ensure LogPath is not influenced by user input or is properly sanitized and validated\nstring sanitizedLogPath = SanitizeLogPath(LogPath);\nFile.WriteAllText(sanitizedLogPath, $\"[{DateTime.Now:HH:mm:ss.fff}] {message}{Environment.NewLine}\");\n```\n\nIn this example, `SanitizeLogPath()` is a hypothetical function that you would implement to sanitize and validate the `LogPath`.\n\n## Library Dependencies\n\nThe provided code snippet requires the following library dependencies:\n\n- System\n- System.IO\n\n## References\n\n- [OWASP Path Traversal](https://owasp.org/www-community/attacks/Path_Traversal)\n- [CWE-23: Relative Path Traversal](https://cwe.mitre.org/data/definitions/23.html)\n- [CWE-73: External Control of File Name or Path](https://cwe.mitre.org/data/definitions/73.html)"
               },
               "properties": {
+                "cwe": [
+                  {
+                    "id": "CWE-23",
+                    "url": "https://cwe.mitre.org/data/definitions/23.html"
+                  },
+                  {
+                    "id": "CWE-73",
+                    "url": "https://cwe.mitre.org/data/definitions/73.html"
+                  }
+                ],
+                "kind": "FAIL",
                 "security-severity": "5.0",
-                "precision": "very-high",
                 "tags": [
-                  "security"
-                ]
-              }
-            },
-            {
-              "id": "fa9a2168-3bc2-306a-a23b-1057830a2371",
-              "name": "resources.rules.glog-csharp.csharp-hardcoded-secret-suspicious-name",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.glog-csharp.csharp-hardcoded-secret-suspicious-name"
-              },
-              "fullDescription": {
-                "text": "Possible hardcoded secret: variable name suggests secret material with a string literal value."
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "warning"
-              },
-              "help": {
-                "text": "Possible hardcoded secret: variable name suggests secret material with a string literal value.",
-                "markdown": "Possible hardcoded secret: variable name suggests secret material with a string literal value."
-              },
-              "properties": {
-                "security-severity": "5.0",
-                "precision": "very-high",
-                "tags": [
-                  "security"
+                  "security",
+                  "CWE-23",
+                  "CWE-73"
                 ]
               }
             },
             {
               "id": "fd90d5c9-9c07-33fd-9581-e09f896b16e1",
-              "name": "resources.rules.glog-csharp.csharp.lfi.file-write",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.glog-csharp.csharp.lfi.file-write"
-              },
-              "fullDescription": {
-                "text": "Potential unsafe file write using user-controlled path. Validate the destination and avoid using user-supplied filenames directly."
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "warning"
-              },
+              "name": "\"User-Controlled Path Vulnerability in File Writing\"",
+              "helpUri": "https://www.glog.ai/",
               "help": {
-                "text": "Potential unsafe file write using user-controlled path. Validate the destination and avoid using user-supplied filenames directly.",
-                "markdown": "Potential unsafe file write using user-controlled path. Validate the destination and avoid using user-supplied filenames directly."
+                "text": "",
+                "markdown": "## Description\n\nUser-Controlled Path Vulnerability in File Writing is a security flaw that occurs when a program allows the user to control the path or name of a file that is written. This can lead to a variety of security issues, including overwriting critical system files, writing files to unauthorized locations, or even remote code execution.\n\nIn the provided C# code, the `WriteAllText` method is used to write a string to a file. The path of the file is provided by the user, which makes the application vulnerable to this type of attack.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, you should validate and sanitize all user inputs. Never trust user input blindly. Make sure the path provided by the user is safe and within the allowed directories. Also, consider using a whitelist of allowed paths.\n\n## Source Code Fix Recommendation\n\nHere is a simple fix for the provided code:\n\n```csharp\npublic void WriteAllText(string path, string contents)\n{\n    string safePath = Path.GetFullPath(path);\n\n    if (safePath.StartsWith(AppDomain.CurrentDomain.BaseDirectory))\n    {\n        File.WriteAllText(safePath, contents);\n    }\n    else\n    {\n        throw new UnauthorizedAccessException(\"Access to the path is denied.\");\n    }\n}\n```\n\nIn this code, `Path.GetFullPath` is used to get the absolute path, which eliminates relative paths. Then it checks if the path starts with the application's base directory. If it does, it writes the file. If not, it throws an exception.\n\n## Library Dependencies\n\nThe code example requires the following library dependencies:\n\n- System\n- System.IO\n\n## References\n\n- [OWASP - Unrestricted File Upload](https://owasp.org/www-community/vulnerabilities/Unrestricted_File_Upload)\n- [CWE-73: External Control of File Name or Path](https://cwe.mitre.org/data/definitions/73.html)"
               },
               "properties": {
+                "cwe": [
+                  {
+                    "id": "CWE-73",
+                    "url": "https://cwe.mitre.org/data/definitions/73.html"
+                  }
+                ],
+                "kind": "FAIL",
                 "security-severity": "5.0",
-                "precision": "very-high",
                 "tags": [
-                  "security"
+                  "security",
+                  "CWE-73"
                 ]
               }
             }
@@ -1073,7 +444,7 @@
           "kind": "fail",
           "level": "warning",
           "message": {
-            "text": "Hardcoded cryptographic IV in code."
+            "text": "Fixed Cryptographic Initialization Vector Vulnerability"
           },
           "locations": [
             {
@@ -1089,73 +460,18 @@
                   "endColumn": 45,
                   "snippet": {
                     "text": "    public const string Privacy = \"Privacy\";"
-                  }
+                  },
+                  "sourceLanguage": "csharp"
                 }
               }
             }
           ],
-          "fingerprints": {
-            "matchBasedId/v1": "579e11f60e684f00a0a9ec2669388f7e837019d1ce9174af6790ec7128cb0e1a39c9b205a87e920c1597fc60e82fee31903c949d614b26afb1c20a6946d901e8_0"
-          }
-        },
-        {
-          "ruleId": "3586fd99-007b-3b57-8be7-3ae37dbc7a9d",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Possible information disclosure: response includes a connection string or password literal."
+          "partialFingerprints": {
+            "glog-pfp-ruleFileLineCode/v1": "2c3afc9bd64a7a5b921aad87a4098d04a7af798ab1efc788273ba793ef93c64a",
+            "glog-pfp-ruleFileCode/v1": "ff08dbd04490015e1c5908f96fd03c4c05553f7b63dfeda2be3b4e1dcea74bfe"
           },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/Winhance.Core/Features/Common/Converters/StringOrStringArrayConverter.cs",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 42,
-                  "startColumn": 34,
-                  "endLine": 42,
-                  "endColumn": 103,
-                  "snippet": {
-                    "text": "        throw new JsonException($\"Unexpected token type {reader.TokenType} when reading string array.\");"
-                  }
-                }
-              }
-            }
-          ],
           "fingerprints": {
-            "matchBasedId/v1": "1c434b0355e3bbcd3e7c404b2460f070bf5d6721aba1bdd613f0dffb102d60cc4d69d5906e01b739642bbd74911ed37b86b7c9c72d4964fc1d2de63ac84b48f1_0"
-          }
-        },
-        {
-          "ruleId": "a6419007-3441-3ffe-b391-9c6c43ab711c",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Possible information disclosure: response includes a connection string or password literal."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/Winhance.Core/Features/Common/Events/IEventBus.cs",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 41,
-                  "startColumn": 21,
-                  "endLine": 41,
-                  "endColumn": 28,
-                  "snippet": {
-                    "text": "    /// <param name=\"token\">The subscription token returned from Subscribe</param>"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "matchBasedId/v1": "7b42643add97b2b743e0823690e4023e7ff0dfad2373519623fa1671aafc6e97ce43ef2bedca76878c33622f4883476a7971afa3f88c9c980b44c8a53a400cbc_0"
+            "glog-fp-ruleFileCode/v1": "ff08dbd04490015e1c5908f96fd03c4c05553f7b63dfeda2be3b4e1dcea74bfe"
           }
         },
         {
@@ -1163,7 +479,7 @@
           "kind": "fail",
           "level": "warning",
           "message": {
-            "text": "Potential unsafe file write using user-controlled path. Validate the destination and avoid using user-supplied filenames directly."
+            "text": "\"User-Controlled Path Vulnerability in File Writing\""
           },
           "locations": [
             {
@@ -1179,43 +495,18 @@
                   "endColumn": 112,
                   "snippet": {
                     "text": "                    File.WriteAllText(LogPath, $\"[{DateTime.Now:HH:mm:ss.fff}] {message}{Environment.NewLine}\");"
-                  }
+                  },
+                  "sourceLanguage": "csharp"
                 }
               }
             }
           ],
-          "fingerprints": {
-            "matchBasedId/v1": "873b00e49b6e5c3b06d6a46b3445b8695f9c072fb70bb36e80bf5ba521537a81768e415413fb4d9aaad849a78b74d2556be1e17f70750aff1c762bc1fd466725_0"
-          }
-        },
-        {
-          "ruleId": "2570e78b-4a71-33c2-bd70-f20aa718b69d",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Minified, compressed, obfuscated or any other form of unreadable files is excluded from the scan, because although a strong indicator of maliciousness, its FP rate is relatively higher. It is highly recommended to store such files in CDN, cloud buckets, etc. and keep the codebase readable."
+          "partialFingerprints": {
+            "glog-pfp-ruleFileLineCode/v1": "65ffe278b3dff838c5c2621a4e924c72a170fafec9bb5c0cc98d904b94c5f4d2",
+            "glog-pfp-ruleFileCode/v1": "28bb8dc74a5eba4b1ac2ff381382099a410d5b4c23a20d098e02f34ee029815f"
           },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/Winhance.Core/Features/Customize/Models/ExplorerCustomizations.cs",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 76,
-                  "startColumn": 1,
-                  "endLine": 76,
-                  "endColumn": 2681,
-                  "snippet": {
-                    "text": "    $b64='AAABAAEAAAAAAAEAIAC5BwAAFgAAAIlQTkcNChoKAAAADUlIRFIAAAEAAAABAAgGAAAAXHKoZgAAB4BJREFUeNrt3eGSmzYAhVFnp+//xJlM67ZJ3Y0XkJBA0j1nJn+yDggEnzG2N98eQKxvdw8AuI8AQDABgGACAMEEAIIJAAQTAAgmABBMACCYAEAwAYBgAgDBBACCCQAEEwAIJgAQTAAgmABAMAGAYAIAwQQAggkABBMACCYAEEwAIJgAQDABgGACAMEEAIIJAAQTAAgmABBMACCYAEAwAYBgAgDBBACCJQXg48Bjftw9SLjSSgHYO8GPnNwfBY+F6c0cgM8nfMuT9qPx8mBIMwbgqmdpVwMsb7YA3PHM7GqAZc0UgDtPRBFgSTMEYJRLcRFgOSMHYJQT/3U8o4wFmhg1AKOebKOOC6qMGICRT7KRxwbFBGC98cFhowVghpNrhjHCIQKw9jhh00gBGO2u/95YZxgnbBKAc+OdZazw1igB+HkyzXRSzTRWeGuEAHw+kWY6sWYaK/xGANqOneuZgxPuDsC7yZtpQmca66rMwQkC0GcbuI79f4IA9NkGrmUOKglAn23gWuag0ogB2Pr7Ec001lWZg0oC0G8buJZ5qCAAfbeD65iDCgLQdzu4jjmoIAB9t4NrmYdCowZg72ejmWmsKzMPhQSg/3ZwHfNQ6O4AbJlpMmca68rMQyEByBvrysxDIQHIG+vqzEUBAcgb6+rMRYGRA/A0y2TOMs4E5qKAAGSNM4G5KCAAWeNMYC4KCEDGGJOYjwICsPb4UpmXgwRg7fGlMi8HCcCaY0tnbg4SgLXGxT/Mz0ECUDemx4Dj4j8jHjdDEoC5x8N75ukgATg+jscgY+GYUY6doQnA/vofN4+BOncfO1MQgDHXzXnm7wABeL/Oxw3rpS0BOEAA/r+ux4Xroy8BOGD0ADx97Py8dpI/L9fBsh4R2DF6AD7+/fN95zE/dn7+jgNjfQKwY4YAPO1N4tZVggMglwDsmCEANZNo0nkSgB2jB+CpZhLd0ONJAHasGoDXf/s48e+ZnwhsWD0ALZfBnMz9hhkC8CQC1DLvGwSA1Zn3DUkBaLkc5mHON6QFoPWyGJ/53pAYgB7LY2zm+wsCQALz/YVZAvAkAtQy119IDkCvZTIe8/yF9AD0XO679XzmoLyGAHxBAPove2v5DsxyryEt2Xf29RsC0H/5W8tNOShb/vKV2u93pOzrIgLQd/lHlrn6gfl5+858Qevnsmq/Ibryfq4iAP3WcXRZR36j0dHlvBrhYG/90kcAGhOAPusoPanPvkwoWd5Verz0aXH1wAsB6LOeVs/qPx/7eJSfTHcf8C0DUHvjb7R9MpyZAvA0w1XA0Wfsx8H1bD221Ul29YesagLgy2AdCEDb9ZRerp+NRYsTrcdvTbryCqjluHrvl+EIQNv19ArAuxtfLd5hKB1Lj32w9ZhH4/EJwCcC0G5dtQf+0ZO05mQteYlw1w3QksdcFYEz7zZMRQDarW/EAGw9tmYsLfZDi58/TozzjquiYQlAm/X1fFZ7d0COGoDak7vmLn+Pl2m9ojis2QLwNOLLgLOve0sv1R+F+6D15w5Kt/HMjcya9dWOccS3U7sSgDbr63nZ2+qjtEevHlqdkHvP6q1usrW4V9NznwxNANqs7+obX2ee+a4IwF7QHifWcXbMtTc/l4yAALRZX82l794yWl82l9w/6PFR3aP7oudbsO8eJwCTuWMiau9M3/WR15Ix1mzv1pg/vnhcz5t7tdvW6q3eaT8zIADt1tnqN/70PJhava3ZM1Sfl39E7Ul8xf2Doc0YgDtMPckNt3naZ7ovtqvFuwhTHxsCcMzUk3xyu1+tsA8E4IUAHDf1RPNLi4/5LvNpQQE4buqJ5pcWL2OW+a6AAJRZ4TVwupYfQGqxnFsJQJklJj3c9M/ajfx9LAsAaQTgZR8IAGR4+9kNAYC1bb5sFQBYS9FnNwQA5nX64+cCAPNo/slMAYAxtfpy2SYBgPtsfevxkrcqBQDaO/p15ts/jyAAUG7vBL/9xD5KAOBrZ3+70fAEgHS3vw6/kwCQIPok3yIArGT5S/bWBIDZeDZvSAAYzTJ32GcgAFzNCT4QAaA1J/hEBIBabrgtQADY4obb4gSAJ8/mj8cff/35fvcgriYAOTyb8xsBWI9ncw4TgPmt+P/3cREBgGACAMEEAIIJAAQTAAgmABBMACCYAEAwAYBgAgDBBACCCQAEEwAIJgAQTAAgmABAMAGAYAIAwQQAggkABBMACCYAEEwAIJgAQDABgGACAMEEAIIJAAQTAAgmABBMACCYAEAwAYBgAgDBBACCCQAEEwAIJgAQTAAgmABAMAGAYAIAwQQAggkABBMACCYAEEwAIJgAQDABgGACAMEEAIIJAAQTAAgmABBMACCYAEAwAYBgAgDBBACCCQAEEwAIJgAQTAAgmABAMAGAYAIAwQQAggkABBMACCYAEEwAIJgAQDABgGACAMEEAIIJAAQTAAgmABBMACCYAEAwAYBgAgDBBACCCQAEEwAIJgAQTAAgmABAMAGAYAIAwQQAggkABBMACCYAEEwAIJgAQDABgGACAMEEAIIJAAQTAAgmABBMACCYAEAwAYBgAgDB/gRG/ewS3uwoeAAAAABJRU5ErkJggg=='"
-                  }
-                }
-              }
-            }
-          ],
           "fingerprints": {
-            "matchBasedId/v1": "3b664693181de1473923fa5c3da742f30337465f01d28b930496e3678a5e28e24b29ba9ac9559d9f8b813fb353c3542c67b2db1382130f5b0c4ed12eadf6efd3_0"
+            "glog-fp-ruleFileCode/v1": "28bb8dc74a5eba4b1ac2ff381382099a410d5b4c23a20d098e02f34ee029815f"
           }
         },
         {
@@ -1223,7 +514,7 @@
           "kind": "fail",
           "level": "warning",
           "message": {
-            "text": "Hiding payloads remotely. Leveraged to detect some staging and exfiltration."
+            "text": "\"Remote Payload Concealment: Detection of Staging and Exfiltration Vulnerability\""
           },
           "locations": [
             {
@@ -1239,73 +530,18 @@
                   "endColumn": 34,
                   "snippet": {
                     "text": "; Source: https://gist.github.com/ThioJoe/f4b0799e2f0d95466f4c2bd4e46d1e67"
-                  }
+                  },
+                  "sourceLanguage": "csharp"
                 }
               }
             }
           ],
-          "fingerprints": {
-            "matchBasedId/v1": "d1740e255ca3bf5dd78ef8735a4937a496c65c4b4bcf3542512038bad3dab27a751d7b0417f0aea9991bdd6210118945892a978acde99988ca8996bfe6424be4_0"
-          }
-        },
-        {
-          "ruleId": "1ae3542a-a684-3699-a6f6-d64ee131593c",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Minified, compressed, obfuscated or any other form of unreadable files is excluded from the scan, because although a strong indicator of maliciousness, its FP rate is relatively higher. It is highly recommended to store such files in CDN, cloud buckets, etc. and keep the codebase readable."
+          "partialFingerprints": {
+            "glog-pfp-ruleFileLineCode/v1": "3c6730a1377cdc7fec141ef4d1d9371da759a8185ffad2d188d57bba73cfc6a7",
+            "glog-pfp-ruleFileCode/v1": "1f27e6b618890ad063fac2c34059059c26466a82ac18b66086c65f67164e0154"
           },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/Winhance.Core/Features/Customize/Models/ExplorerCustomizations.cs",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 2484,
-                  "startColumn": 1,
-                  "endLine": 2484,
-                  "endColumn": 454,
-                  "snippet": {
-                    "text": "                    // MIGRATION-CHECK: explorer-customization-measurement-system — pre-migration RegistrySetting had DefaultOption=\"U.S. (Imperial)\" (idx 1) and DefaultValue=\"1\", but both shipped Default configs (Windows10_22H2 and Windows11_25H2) use SelectedIndex=0 (Metric), and the Recommended config also uses idx 0. Configs win over DefaultOption/DefaultValue per sourcing authority; IsDefault placed on idx 0 (Metric), IsRecommended on idx 0."
-                  }
-                }
-              }
-            }
-          ],
           "fingerprints": {
-            "matchBasedId/v1": "3b664693181de1473923fa5c3da742f30337465f01d28b930496e3678a5e28e24b29ba9ac9559d9f8b813fb353c3542c67b2db1382130f5b0c4ed12eadf6efd3_1"
-          }
-        },
-        {
-          "ruleId": "cbc28362-913f-344c-9c2e-53242c4ed532",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Potential cleartext transmission: HTTP URL literal."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/Winhance.Core/Features/Customize/Models/StartMenuLayouts.cs",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 10,
-                  "startColumn": 51,
-                  "endLine": 10,
-                  "endColumn": 58,
-                  "snippet": {
-                    "text": "<LayoutModificationTemplate xmlns:defaultlayout=\"\"http://schemas.microsoft.com/Start/2014/FullDefaultLayout\"\" xmlns:start=\"\"http://schemas.microsoft.com/Start/2014/StartLayout\"\" Version=\"\"1\"\" xmlns:taskbar=\"\"http://schemas.microsoft.com/Start/2014/TaskbarLayout\"\" xmlns=\"\"http://schemas.microsoft.com/Start/2014/LayoutModification\"\">"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "matchBasedId/v1": "8dd2e329ec927230ace746b2e3820d7ca33ad8d42c7cc2be73b74050338c6c6e11f23adffd7285de92c6d8128d9fdbc99f8005d64c5bec0a8b2e54011a4435ab_0"
+            "glog-fp-ruleFileCode/v1": "1f27e6b618890ad063fac2c34059059c26466a82ac18b66086c65f67164e0154"
           }
         },
         {
@@ -1313,7 +549,7 @@
           "kind": "fail",
           "level": "warning",
           "message": {
-            "text": "Minified, compressed, obfuscated or any other form of unreadable files is excluded from the scan, because although a strong indicator of maliciousness, its FP rate is relatively higher. It is highly recommended to store such files in CDN, cloud buckets, etc. and keep the codebase readable."
+            "text": "Exclusion of Unreadable Files from Scans Due to High False Positive Rate; Recommendation for Storage in CDN or Cloud Buckets"
           },
           "locations": [
             {
@@ -1329,13 +565,18 @@
                   "endColumn": 402,
                   "snippet": {
                     "text": "                            DisabledScript = @\"$f='C:\\Windows\\SystemApps\\MicrosoftWindows.Client.CBS_cw5n1h2txyewy\\TextInputHost.exe'; $o=$f-replace'\\.exe$','.old.exe'; if(Test-Path $f){takeown /f $f /a | Out-Null; icacls $f /grant Administrators:F | Out-Null; if(Test-Path $o){Remove-Item $o -Force}; Rename-Item $f $o -Force}; Stop-Process -Name TextInputHost -Force -ErrorAction SilentlyContinue\","
-                  }
+                  },
+                  "sourceLanguage": "csharp"
                 }
               }
             }
           ],
+          "partialFingerprints": {
+            "glog-pfp-ruleFileLineCode/v1": "80c05be9432e47780dd218c300a18bdab5e822d822a46875bd864f7af8338c26",
+            "glog-pfp-ruleFileCode/v1": "9354f30beac211405f0aacfe1f12b33d2e6b8fdd957af7484b772b95e0397264"
+          },
           "fingerprints": {
-            "matchBasedId/v1": "ff03f470c99f6655fe92b4e5fdb33cb1f78ac5b7e06ff3e52a0e24b3dd198f6ea5ecb9aaf8fac1b8a2923ccc0e3e3fc297470bb6916b3857ed3957639590e088_0"
+            "glog-fp-ruleFileCode/v1": "9354f30beac211405f0aacfe1f12b33d2e6b8fdd957af7484b772b95e0397264"
           }
         },
         {
@@ -1343,7 +584,7 @@
           "kind": "fail",
           "level": "warning",
           "message": {
-            "text": "Hiding payloads remotely. Leveraged to detect some staging and exfiltration."
+            "text": "Remote Payload Concealment: Detection of Staging and Exfiltration Vulnerability"
           },
           "locations": [
             {
@@ -1359,13 +600,18 @@
                   "endColumn": 78,
                   "snippet": {
                     "text": "      - Legacy Edge removal based on work by ishad0w: https://gist.github.com/ishad0w/d25ca52eb04dbefba8087a344a69c79c"
-                  }
+                  },
+                  "sourceLanguage": "csharp"
                 }
               }
             }
           ],
+          "partialFingerprints": {
+            "glog-pfp-ruleFileLineCode/v1": "0f92b88cf20e5a7981812a306cfb84683b35233ba7181b5812589f4a21d809dc",
+            "glog-pfp-ruleFileCode/v1": "8a3aeaaf11a569f82f2248ff70f0fd7a6339e189d5e59536b36c7e4ec5482e90"
+          },
           "fingerprints": {
-            "matchBasedId/v1": "7ec1b66b3ca76aaf0b240e0f4acf2e74a716f1c65f3cd44348ceca3775e426b36a4c351b45007686a2c2e63aab557c9af6bc5e98cd0d43bf3303e82ed9f5b45f_0"
+            "glog-fp-ruleFileCode/v1": "8a3aeaaf11a569f82f2248ff70f0fd7a6339e189d5e59536b36c7e4ec5482e90"
           }
         },
         {
@@ -1373,7 +619,7 @@
           "kind": "fail",
           "level": "warning",
           "message": {
-            "text": "Possible information disclosure: response includes a connection string or password literal."
+            "text": "Potential Data Leak: Response Contains Connection String or Password Literal"
           },
           "locations": [
             {
@@ -1389,13 +635,18 @@
                   "endColumn": 82,
                   "snippet": {
                     "text": "        for /f \"\"skip=1 tokens=2*\"\" %%A in ('reg query \"\"%%K\\shell\\open\\command\"\" /ve 2^>nul') do ("
-                  }
+                  },
+                  "sourceLanguage": "csharp"
                 }
               }
             }
           ],
+          "partialFingerprints": {
+            "glog-pfp-ruleFileLineCode/v1": "56b86aa08b83e7cc0f7345a009c4c71d87b7301b69ba6a6152dc58fbfdd02e2c",
+            "glog-pfp-ruleFileCode/v1": "918a8d29f2e8a83b2e88c6c306e9cf01aa691d8a68ca22c38fa898324ceab472"
+          },
           "fingerprints": {
-            "matchBasedId/v1": "81d39b067b403f02a08072f5bd14a29255fbe90fd2fe158f97620edbf479575350590e02e41b2dd0a42b4c7e4e8506bb5d3e6fbaf36c5de398e8e23af587ae77_0"
+            "glog-fp-ruleFileCode/v1": "918a8d29f2e8a83b2e88c6c306e9cf01aa691d8a68ca22c38fa898324ceab472"
           }
         },
         {
@@ -1403,7 +654,7 @@
           "kind": "fail",
           "level": "warning",
           "message": {
-            "text": "Possible information disclosure: response includes a connection string or password literal."
+            "text": "Potential Data Leak: Response Contains Connection String or Password Literal"
           },
           "locations": [
             {
@@ -1419,133 +670,18 @@
                   "endColumn": 121,
                   "snippet": {
                     "text": "for /f \"\"skip=2 tokens=* delims=\"\" %%V in ('%{reg}% %4 %5 %6 %7 %8 %9 2^>nul') do if not defined {var} set \"\"{var}=%%V\"\""
-                  }
+                  },
+                  "sourceLanguage": "csharp"
                 }
               }
             }
           ],
-          "fingerprints": {
-            "matchBasedId/v1": "81d39b067b403f02a08072f5bd14a29255fbe90fd2fe158f97620edbf479575350590e02e41b2dd0a42b4c7e4e8506bb5d3e6fbaf36c5de398e8e23af587ae77_1"
-          }
-        },
-        {
-          "ruleId": "0d11da4e-b696-3101-8e7c-6ad25efae3cb",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Potential cleartext transmission: HTTP URL literal."
+          "partialFingerprints": {
+            "glog-pfp-ruleFileLineCode/v1": "3c2114707ea792bbdb961b4fb1abb23b7beac31389af685aed3c0937ef620616",
+            "glog-pfp-ruleFileCode/v1": "654975225d6a4ad88e0621d4cfc7ea4976fe1ec8928df87e1d1ce1b76128398b"
           },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/Winhance.Core/Features/SoftwareApps/Models/ExternalAppDefinitions.OpticalDiscTools.cs",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 36,
-                  "startColumn": 39,
-                  "endLine": 36,
-                  "endColumn": 46,
-                  "snippet": {
-                    "text": "                        WebsiteUrl = \"http://www.anyburn.com/\","
-                  }
-                }
-              }
-            }
-          ],
           "fingerprints": {
-            "matchBasedId/v1": "74f2763e92155ab5d556d58d57c4ff2b5ebf81da87b21dbeb88431cfa06433b54d78ebfd0603bfddf1a0e9cd74f75bfbd6f0dc7e0de3416871f46933a577a1c3_0"
-          }
-        },
-        {
-          "ruleId": "32d8375a-fe51-3f95-9bef-957d977a9d62",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Possible information disclosure: response includes a connection string or password literal."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/Winhance.Infrastructure/Features/AdvancedTools/ScriptSections/ScriptPreambleSection.cs",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 332,
-                  "startColumn": 27,
-                  "endLine": 332,
-                  "endColumn": 82,
-                  "snippet": {
-                    "text": "                Write-Log \"\"Using elevated linked token for admin user\"\" \"\"INFO\"\""
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "matchBasedId/v1": "c91cd26c6d70148a78a188aa91d1270243074ba0f5d39df740c78e85cb0bf7f2bd698279f65ef4ac9076b1a160fa94f7a188178a238fa98acf7d3ad53b7b1e37_0"
-          }
-        },
-        {
-          "ruleId": "8b4997f1-c619-36e1-a3a7-e8bc53b51f59",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Potential cleartext transmission: HTTP URL literal."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/Winhance.Infrastructure/Features/AdvancedTools/ScriptSections/SpecialFeatureScriptSection.cs",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 67,
-                  "startColumn": 74,
-                  "endLine": 67,
-                  "endColumn": 81,
-                  "snippet": {
-                    "text": "        sb.AppendLine(\"<LayoutModificationTemplate Version=\\\"1\\\" xmlns=\\\"http://schemas.microsoft.com/Start/2014/LayoutModification\\\">\");"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "matchBasedId/v1": "8ab15e89bdfd1ed33249650598bc32bc43bcb2ea7b68134eafe653c8f6fc4cbe8bd5e0c28ef7901fccb2cb92d4959f39291ceae7fbc2b97e8d0d661e92787e80_0"
-          }
-        },
-        {
-          "ruleId": "845c8584-8fc9-383d-99ad-a1788a5b46f2",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Potential cleartext transmission: HTTP URL literal."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/Winhance.Infrastructure/Features/AdvancedTools/ScriptSections/SpecialFeatureScriptSection.cs",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 71,
-                  "startColumn": 78,
-                  "endLine": 71,
-                  "endColumn": 85,
-                  "snippet": {
-                    "text": "        sb.AppendLine(\"            <StartLayout GroupCellWidth=\\\"6\\\" xmlns=\\\"http://schemas.microsoft.com/Start/2014/FullDefaultLayout\\\" />\");"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "matchBasedId/v1": "8ab15e89bdfd1ed33249650598bc32bc43bcb2ea7b68134eafe653c8f6fc4cbe8bd5e0c28ef7901fccb2cb92d4959f39291ceae7fbc2b97e8d0d661e92787e80_1"
+            "glog-fp-ruleFileCode/v1": "654975225d6a4ad88e0621d4cfc7ea4976fe1ec8928df87e1d1ce1b76128398b"
           }
         },
         {
@@ -1553,7 +689,7 @@
           "kind": "fail",
           "level": "warning",
           "message": {
-            "text": "Potential path traversal: file read with non-literal path. Validate/normalize input and enforce an allowlist or base directory."
+            "text": "\"Non-Literal Path File Read Vulnerability\""
           },
           "locations": [
             {
@@ -1569,13 +705,18 @@
                   "endColumn": 69,
                   "snippet": {
                     "text": "    public string ReadAllText(string path) => File.ReadAllText(path);"
-                  }
+                  },
+                  "sourceLanguage": "csharp"
                 }
               }
             }
           ],
+          "partialFingerprints": {
+            "glog-pfp-ruleFileLineCode/v1": "96d58155bfa5370aee9517007f437bc368f58affba8dc4ad86c73dd300a8b37f",
+            "glog-pfp-ruleFileCode/v1": "6c7424f6a85296b9ed931e56447467a04c33bfb0ee2cc5ad9f24bffeca4b4929"
+          },
           "fingerprints": {
-            "matchBasedId/v1": "240fbb0c5f6f7040cc64f362e0ebd56f93c5426a751768ba743331d938f2fd1065f68bd12243a15091edbed051e8235b861c93dd525b0366eaf86e9e7d92217f_0"
+            "glog-fp-ruleFileCode/v1": "6c7424f6a85296b9ed931e56447467a04c33bfb0ee2cc5ad9f24bffeca4b4929"
           }
         },
         {
@@ -1583,7 +724,7 @@
           "kind": "fail",
           "level": "warning",
           "message": {
-            "text": "Potential unsafe file write using user-controlled path. Validate the destination and avoid using user-supplied filenames directly."
+            "text": "\"User-Controlled Path Vulnerability in File Writing\""
           },
           "locations": [
             {
@@ -1599,133 +740,18 @@
                   "endColumn": 96,
                   "snippet": {
                     "text": "    public void WriteAllText(string path, string contents) => File.WriteAllText(path, contents);"
-                  }
+                  },
+                  "sourceLanguage": "csharp"
                 }
               }
             }
           ],
-          "fingerprints": {
-            "matchBasedId/v1": "b967403d81c658bf5af8954b1a30f13ed2e4d35f78907b9cb45da2ae54654b4ae1b470d71e47b1bcf62eceec66d68f20ceff85cbd60aa0c62e0657967ba40129_0"
-          }
-        },
-        {
-          "ruleId": "474767fc-ada2-362c-b625-2d0cc2516a44",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Possible information disclosure: response includes a connection string or password literal."
+          "partialFingerprints": {
+            "glog-pfp-ruleFileLineCode/v1": "dc85fccf118c43f483f13f693b91b9c9c6ff10baacd9b17d6c719dfb4c2dbc83",
+            "glog-pfp-ruleFileCode/v1": "3de6481f38a3b35ab71a11cebc7ca29a85151bfce41c9be73009302d5beead01"
           },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/Winhance.Infrastructure/Features/Common/Services/InteractiveUserService.cs",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 76,
-                  "startColumn": 21,
-                  "endLine": 76,
-                  "endColumn": 118,
-                  "snippet": {
-                    "text": "                    \"Interactive user token acquired — WinGet and other processes will run as the interactive user\");"
-                  }
-                }
-              }
-            }
-          ],
           "fingerprints": {
-            "matchBasedId/v1": "6741895b2f086935e29043dd6bc148cff997b6edaaa53c707355813335891d8ea91f21fa5d61cfbd37bf224e72679e7688193c249decee3d1d281b463d79abdd_0"
-          }
-        },
-        {
-          "ruleId": "31af6041-7410-3c94-8300-0637bcb53ac8",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Possible information disclosure: response includes a connection string or password literal."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/Winhance.Infrastructure/Features/Common/Services/InteractiveUserService.cs",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 81,
-                  "startColumn": 21,
-                  "endLine": 81,
-                  "endColumn": 113,
-                  "snippet": {
-                    "text": "                    \"Could not acquire interactive user token — processes will run as the elevated admin user\");"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "matchBasedId/v1": "6741895b2f086935e29043dd6bc148cff997b6edaaa53c707355813335891d8ea91f21fa5d61cfbd37bf224e72679e7688193c249decee3d1d281b463d79abdd_1"
-          }
-        },
-        {
-          "ruleId": "2f551c12-8043-3cb8-9030-ff1b90be0841",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Possible information disclosure: response includes a connection string or password literal."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/Winhance.Infrastructure/Features/Common/Services/InteractiveUserService.cs",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 489,
-                  "startColumn": 41,
-                  "endLine": 489,
-                  "endColumn": 125,
-                  "snippet": {
-                    "text": "                                        \"OTS detection: Successfully duplicated interactive user token for process creation\");"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "matchBasedId/v1": "6741895b2f086935e29043dd6bc148cff997b6edaaa53c707355813335891d8ea91f21fa5d61cfbd37bf224e72679e7688193c249decee3d1d281b463d79abdd_2"
-          }
-        },
-        {
-          "ruleId": "f46c0835-ef2a-3283-b148-b4a14aa5c8aa",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Possible information disclosure: response includes a connection string or password literal."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/Winhance.Infrastructure/Features/Common/Services/InteractiveUserService.cs",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 494,
-                  "startColumn": 42,
-                  "endLine": 494,
-                  "endColumn": 122,
-                  "snippet": {
-                    "text": "                                        $\"OTS detection: Failed to duplicate token (error {Marshal.GetLastWin32Error()})\");"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "matchBasedId/v1": "6741895b2f086935e29043dd6bc148cff997b6edaaa53c707355813335891d8ea91f21fa5d61cfbd37bf224e72679e7688193c249decee3d1d281b463d79abdd_3"
+            "glog-fp-ruleFileCode/v1": "3de6481f38a3b35ab71a11cebc7ca29a85151bfce41c9be73009302d5beead01"
           }
         },
         {
@@ -1733,7 +759,7 @@
           "kind": "fail",
           "level": "warning",
           "message": {
-            "text": "Possible information disclosure: response includes a connection string or password literal."
+            "text": "Potential Data Leak: Response Contains Connection String or Password Literal"
           },
           "locations": [
             {
@@ -1749,13 +775,18 @@
                   "endColumn": 107,
                   "snippet": {
                     "text": "            _logService.Log(LogLevel.Debug, $\"OTS detection: Explorer token approach failed: {ex.Message}\");"
-                  }
+                  },
+                  "sourceLanguage": "csharp"
                 }
               }
             }
           ],
+          "partialFingerprints": {
+            "glog-pfp-ruleFileLineCode/v1": "67f973819ff21b0f480648135ec3dde100e5ac65ba7ac860db53bf1ba2f5ad4b",
+            "glog-pfp-ruleFileCode/v1": "95fdc5e02050d26a19184b6c5496414dc0d8cda6ed147a3b78e42e5d9298b503"
+          },
           "fingerprints": {
-            "matchBasedId/v1": "6741895b2f086935e29043dd6bc148cff997b6edaaa53c707355813335891d8ea91f21fa5d61cfbd37bf224e72679e7688193c249decee3d1d281b463d79abdd_4"
+            "glog-fp-ruleFileCode/v1": "95fdc5e02050d26a19184b6c5496414dc0d8cda6ed147a3b78e42e5d9298b503"
           }
         },
         {
@@ -1763,7 +794,7 @@
           "kind": "fail",
           "level": "warning",
           "message": {
-            "text": "Hardcoded cryptographic key or secret detected."
+            "text": "Detected Hardcoded Cryptographic Key/Secret Vulnerability"
           },
           "locations": [
             {
@@ -1779,73 +810,18 @@
                   "endColumn": 111,
                   "snippet": {
                     "text": "    private const string SystemRestoreKeyPath = @\"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore\";"
-                  }
+                  },
+                  "sourceLanguage": "csharp"
                 }
               }
             }
           ],
-          "fingerprints": {
-            "matchBasedId/v1": "bb2c99858440c393a1a04f98a02d6ba04b0bfa0c12aedfe0c92f7ac72bf1b7af51bcccf8e6d3c7a9694499e94398a7a1f2a8be894e983154fa40f823fc816059_0"
-          }
-        },
-        {
-          "ruleId": "12ba7638-c369-3136-9afb-439211ad012a",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Possible hardcoded secret: variable name suggests secret material with a string literal value."
+          "partialFingerprints": {
+            "glog-pfp-ruleFileLineCode/v1": "157a8e1dc79102d196f28c25570a50868a727ad5a19ed1d2b6b8bd4b9d1e7290",
+            "glog-pfp-ruleFileCode/v1": "5f0c016734de789b2f9b1bdb0bd4d71fed748e3f3884aa36a08e49bb96149826"
           },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/Winhance.Infrastructure/Features/Common/Services/SystemBackupService.cs",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 253,
-                  "startColumn": 5,
-                  "endLine": 253,
-                  "endColumn": 111,
-                  "snippet": {
-                    "text": "    private const string SystemRestoreKeyPath = @\"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore\";"
-                  }
-                }
-              }
-            }
-          ],
           "fingerprints": {
-            "matchBasedId/v1": "22b54a888312a1494a0f3cf9980d259edfd98747c6b5396411c90432e283af262bc5555b89c0317a8b5584dad78004d711a28ec372a5dcb9b6993dc4f8539a88_0"
-          }
-        },
-        {
-          "ruleId": "a3e1f4fe-a32a-3fed-8bbd-7a2dd23ccfff",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Possible hardcoded secret: variable name suggests secret material with a string literal value."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/Winhance.Infrastructure/Features/Common/Services/VersionService.cs",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 20,
-                  "startColumn": 5,
-                  "endLine": 20,
-                  "endColumn": 121,
-                  "snippet": {
-                    "text": "    private readonly string _latestReleaseApiUrl = \"https://api.github.com/repos/memstechtips/Winhance/releases/latest\";"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "matchBasedId/v1": "c78a08e9178c0ccdfbe4ed7c6e541100c728216dc3e0c56f8c9e8a06bb5992fb9d771243be92a171b1d033c6bb70b403689f06c526fbecd8dab08888765d15d1_0"
+            "glog-fp-ruleFileCode/v1": "5f0c016734de789b2f9b1bdb0bd4d71fed748e3f3884aa36a08e49bb96149826"
           }
         },
         {
@@ -1853,7 +829,7 @@
           "kind": "fail",
           "level": "warning",
           "message": {
-            "text": "Minified, compressed, obfuscated or any other form of unreadable files is excluded from the scan, because although a strong indicator of maliciousness, its FP rate is relatively higher. It is highly recommended to store such files in CDN, cloud buckets, etc. and keep the codebase readable."
+            "text": "Exclusion of Unreadable Files from Scans Due to High False Positive Rate; Recommendation for Storage in CDN or Cloud Buckets"
           },
           "locations": [
             {
@@ -1869,73 +845,18 @@
                   "endColumn": 1020,
                   "snippet": {
                     "text": "                        $\"-ExecutionPolicy Bypass -WindowStyle Hidden -Command \\\"$loggedInUser = (Get-WmiObject -Class Win32_ComputerSystem).UserName.Split('\\\\')[1]; $userSID = (New-Object System.Security.Principal.NTAccount($loggedInUser)).Translate([System.Security.Principal.SecurityIdentifier]).Value; reg add ('HKU\\\\' + $userSID + '\\\\SOFTWARE\\\\Policies\\\\Microsoft\\\\Windows\\\\Explorer') /v LockedStartLayout /t REG_DWORD /d 1 /f; reg add ('HKU\\\\' + $userSID + '\\\\SOFTWARE\\\\Policies\\\\Microsoft\\\\Windows\\\\Explorer') /v StartLayoutFile /t REG_SZ /d 'C:\\\\Users\\\\Default\\\\AppData\\\\Local\\\\Microsoft\\\\Windows\\\\Shell\\\\LayoutModification.xml' /f; Stop-Process -Name 'StartMenuExperienceHost' -Force -ErrorAction SilentlyContinue; Start-Sleep 10; Set-ItemProperty -Path ('Registry::HKU\\\\' + $userSID + '\\\\SOFTWARE\\\\Policies\\\\Microsoft\\\\Windows\\\\Explorer') -Name 'LockedStartLayout' -Value 0; Stop-Process -Name 'StartMenuExperienceHost' -Force -ErrorAction SilentlyContinue; schtasks /delete /tn 'Winhance\\\\{taskName}' /f\\\"\";"
-                  }
+                  },
+                  "sourceLanguage": "csharp"
                 }
               }
             }
           ],
-          "fingerprints": {
-            "matchBasedId/v1": "3330543a2074ed9b80ee0e188799ee0e1543386b31608013fe249fdcf78e4bac6538a617db575b4022c2a3e8836b7dbdf9477f68882c14de7ee1ba29b544d026_0"
-          }
-        },
-        {
-          "ruleId": "8daaf129-ea97-32a8-9797-c6a15c944353",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Possible hardcoded secret: variable name suggests secret material with a string literal value."
+          "partialFingerprints": {
+            "glog-pfp-ruleFileLineCode/v1": "9ca0351b57b6fc5056d0c7eea9a202b9331efe801800b1fe6fcd1db1e36cc64c",
+            "glog-pfp-ruleFileCode/v1": "3866b95445d2f65d78bdfd9e32229abe62fd7033fcaddcc158a20f9434f7ff8a"
           },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/Winhance.Infrastructure/Features/Customize/Services/TaskbarService.cs",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 65,
-                  "startColumn": 13,
-                  "endLine": 65,
-                  "endColumn": 126,
-                  "snippet": {
-                    "text": "            const string taskbandKey = \"HKEY_CURRENT_USER\\\\Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Explorer\\\\Taskband\";"
-                  }
-                }
-              }
-            }
-          ],
           "fingerprints": {
-            "matchBasedId/v1": "e96f464d2cc2f5b9c81a466c196811e178e06f494d5dadac48fb3b1f0e64e4163a4a6a406cf927a0198b8ddf3dce72dd150e32dbc9833db18a5759269ddd9c20_0"
-          }
-        },
-        {
-          "ruleId": "c5e3e1fb-0820-39f5-9a00-4bbf8454d629",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Possible hardcoded secret: variable name suggests secret material with a string literal value."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/Winhance.Infrastructure/Features/SoftwareApps/Services/StoreDownloadService.cs",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 27,
-                  "startColumn": 5,
-                  "endLine": 27,
-                  "endColumn": 84,
-                  "snippet": {
-                    "text": "    private const string StoreApiUrl = \"https://store.rg-adguard.net/api/GetFiles\";"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "matchBasedId/v1": "b031ea3766800f3af1a160f61bb0eb5227e858dd72b630290f46d1c2f8c9217469d7ad8d10908db269e42de5af05527998929ac091ff841d8e8366980c91b931_0"
+            "glog-fp-ruleFileCode/v1": "3866b95445d2f65d78bdfd9e32229abe62fd7033fcaddcc158a20f9434f7ff8a"
           }
         },
         {
@@ -1943,7 +864,7 @@
           "kind": "fail",
           "level": "warning",
           "message": {
-            "text": "Possible SSRF: user input flows into HttpClient request."
+            "text": "Potential SSRF Vulnerability: User Input Affects HttpClient Request"
           },
           "locations": [
             {
@@ -1959,73 +880,18 @@
                   "endColumn": 105,
                   "snippet": {
                     "text": "        using var response = await _httpClient.PostAsync(StoreApiUrl, requestContent, cancellationToken).ConfigureAwait(false);"
-                  }
+                  },
+                  "sourceLanguage": "csharp"
                 }
               }
             }
           ],
-          "fingerprints": {
-            "matchBasedId/v1": "d82d8324ba7c8fed4b9942cc98e201f579373dc3f99fbe00c42c19960f06d936bf8ba94867763511ca6223c23639b720bf8eba0ee75ffe39134d43f5d04dfe82_0"
-          }
-        },
-        {
-          "ruleId": "555531da-0856-33be-a1e3-03531101d27f",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Hardcoded cryptographic key or secret detected."
+          "partialFingerprints": {
+            "glog-pfp-ruleFileLineCode/v1": "d1508774f70af4ee5539865308e76d64ac4527990d6de8d9d6f5c2638888ea41",
+            "glog-pfp-ruleFileCode/v1": "c3ea3175e94c64adcf5bcc6461e4771407f26e5878a280557d071fc8ed474027"
           },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/Winhance.Infrastructure/Features/SoftwareApps/Services/WindowsAppsService.cs",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 35,
-                  "startColumn": 5,
-                  "endLine": 35,
-                  "endColumn": 100,
-                  "snippet": {
-                    "text": "    private const string FallbackConfirmationPreferenceKey = \"StoreDownloadFallback_DontShowAgain\";"
-                  }
-                }
-              }
-            }
-          ],
           "fingerprints": {
-            "matchBasedId/v1": "15dfb894b9b9f86a93fe1c5378929b8e2422a20eeb0960528d2eae90a685c8f131e1daa92c1b039ed6d637542a11288558e1b48467e743b4902edc429d603952_0"
-          }
-        },
-        {
-          "ruleId": "392afe70-d85f-35b9-baae-182fd9ac89fa",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Possible hardcoded secret: variable name suggests secret material with a string literal value."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/Winhance.Infrastructure/Features/SoftwareApps/Services/WindowsAppsService.cs",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 35,
-                  "startColumn": 5,
-                  "endLine": 35,
-                  "endColumn": 100,
-                  "snippet": {
-                    "text": "    private const string FallbackConfirmationPreferenceKey = \"StoreDownloadFallback_DontShowAgain\";"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "matchBasedId/v1": "ce8b4f9a72e9a9eafb0fbd21281b64ed05bb2844f1972f5fb1dce451207a03717a5bec228273f448334c7c36d7ba226e9a7d9f9946cba83c11e78877b13ea904_0"
+            "glog-fp-ruleFileCode/v1": "c3ea3175e94c64adcf5bcc6461e4771407f26e5878a280557d071fc8ed474027"
           }
         },
         {
@@ -2033,7 +899,7 @@
           "kind": "fail",
           "level": "warning",
           "message": {
-            "text": "Potential path traversal: file read with non-literal path. Validate/normalize input and enforce an allowlist or base directory."
+            "text": "\"Possible Path Traversal: Non-Literal File Read Vulnerability\""
           },
           "locations": [
             {
@@ -2049,13 +915,18 @@
                   "endColumn": 52,
                   "snippet": {
                     "text": "        using var reader = new StreamReader(stream);"
-                  }
+                  },
+                  "sourceLanguage": "csharp"
                 }
               }
             }
           ],
+          "partialFingerprints": {
+            "glog-pfp-ruleFileLineCode/v1": "bf77fd19877b6451febe1637e651d5d475f730c7678bb98968862ce8de353dff",
+            "glog-pfp-ruleFileCode/v1": "830efa27111716c8a3fa6b4d09ce2f9b19dbd0f40dd5f9c9e4bd73ee82122a0c"
+          },
           "fingerprints": {
-            "matchBasedId/v1": "70d419e8e9aae841a0c53676584a458e4f556edef9ec6c677e6351fb67b1b6dac54fc5c5efe39f2f7a06cfb8d287d231b9c370965c035f78f8a1c601441c1596_0"
+            "glog-fp-ruleFileCode/v1": "830efa27111716c8a3fa6b4d09ce2f9b19dbd0f40dd5f9c9e4bd73ee82122a0c"
           }
         },
         {
@@ -2063,7 +934,7 @@
           "kind": "fail",
           "level": "warning",
           "message": {
-            "text": "Potential remote file inclusion: loading from a non-literal URL."
+            "text": "Possible Non-Literal URL Remote File Inclusion Vulnerability"
           },
           "locations": [
             {
@@ -2079,73 +950,18 @@
                   "endColumn": 57,
                   "snippet": {
                     "text": "            await Task.Run(() => XDocument.Load(xmlPath));"
-                  }
+                  },
+                  "sourceLanguage": "csharp"
                 }
               }
             }
           ],
-          "fingerprints": {
-            "matchBasedId/v1": "1f5db152247509710de15b76f40f57fb3cf1754259f16e429907608c94f0d842a47a7fbd305efdec9963c24bd981851f0df88f99003d114a6f473628cb896723_0"
-          }
-        },
-        {
-          "ruleId": "523270bd-a52f-3b86-87ed-8d5ce819d964",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Hardcoded cryptographic IV in code."
+          "partialFingerprints": {
+            "glog-pfp-ruleFileLineCode/v1": "e6e7dff277ab922f9168485dd821a898d356eb0b257b821ccc42eb0a1e940a43",
+            "glog-pfp-ruleFileCode/v1": "509d3b0e668a8347a3105a2300ed7bb475613ef8be932368a4626a3529e959be"
           },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/Winhance.UI/Features/Common/Constants/StringKeys.cs",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 97,
-                  "startColumn": 9,
-                  "endLine": 97,
-                  "endColumn": 63,
-                  "snippet": {
-                    "text": "        public const string LightNative = \"Theme_LightNative\";"
-                  }
-                }
-              }
-            }
-          ],
           "fingerprints": {
-            "matchBasedId/v1": "ea7af2eb96e616cb7c6db5b62907b53e82e31391999c89e9a400b5d469fe537fa0d56d1b21320cd0221b5a8141a5b305f82ee3b78a03120baf0b1aff0c131205_0"
-          }
-        },
-        {
-          "ruleId": "77b01fd7-b154-3d5f-b4e1-63dfa52735af",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Hardcoded cryptographic IV in code."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/Winhance.UI/Features/Common/Constants/StringKeys.cs",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 98,
-                  "startColumn": 9,
-                  "endLine": 98,
-                  "endColumn": 61,
-                  "snippet": {
-                    "text": "        public const string DarkNative = \"Theme_DarkNative\";"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "matchBasedId/v1": "2c0e0b726bb47a2f56c6a512bb580998a8976fb02e6e82e8b7b1c46a6570252bdeb893a461383ad9bf0ed6ad17f92eafe42cc3116dc0089baadba2dcb9818a14_0"
+            "glog-fp-ruleFileCode/v1": "509d3b0e668a8347a3105a2300ed7bb475613ef8be932368a4626a3529e959be"
           }
         },
         {
@@ -2153,7 +969,7 @@
           "kind": "fail",
           "level": "warning",
           "message": {
-            "text": "Potential path traversal: file read with non-literal path. Validate/normalize input and enforce an allowlist or base directory."
+            "text": "\"Possible Path Traversal: Non-Literal File Read Vulnerability\""
           },
           "locations": [
             {
@@ -2169,13 +985,18 @@
                   "endColumn": 56,
                   "snippet": {
                     "text": "            using var reader = new StreamReader(stream);"
-                  }
+                  },
+                  "sourceLanguage": "csharp"
                 }
               }
             }
           ],
+          "partialFingerprints": {
+            "glog-pfp-ruleFileLineCode/v1": "e197ead2cb24c0bc65e19982ba2ce2d68439427c49c480dcab2629d37d2486f0",
+            "glog-pfp-ruleFileCode/v1": "0cb719e0da00790e9c2db2309519a9750e514be9e99ab13d23ac2d01a1367b7d"
+          },
           "fingerprints": {
-            "matchBasedId/v1": "c585ff8e97310588871cab8aa8f215634c15a9d41c04c965f61b56aebcfa6c91ca9d14889265a5350b90c2c65a0be3438d1a66dbb885397f5189e9e81fef49d5_0"
+            "glog-fp-ruleFileCode/v1": "0cb719e0da00790e9c2db2309519a9750e514be9e99ab13d23ac2d01a1367b7d"
           }
         },
         {
@@ -2183,7 +1004,7 @@
           "kind": "fail",
           "level": "warning",
           "message": {
-            "text": "Potential path traversal: file read with non-literal path. Validate/normalize input and enforce an allowlist or base directory."
+            "text": "\"Possible Path Traversal: Non-Literal File Read Vulnerability\""
           },
           "locations": [
             {
@@ -2199,43 +1020,18 @@
                   "endColumn": 56,
                   "snippet": {
                     "text": "            using var reader = new StreamReader(stream);"
-                  }
+                  },
+                  "sourceLanguage": "csharp"
                 }
               }
             }
           ],
-          "fingerprints": {
-            "matchBasedId/v1": "c585ff8e97310588871cab8aa8f215634c15a9d41c04c965f61b56aebcfa6c91ca9d14889265a5350b90c2c65a0be3438d1a66dbb885397f5189e9e81fef49d5_1"
-          }
-        },
-        {
-          "ruleId": "ab909335-8f16-30c8-810d-2b909ed1de0a",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Obfuscation by reconstruction of hardcoded data."
+          "partialFingerprints": {
+            "glog-pfp-ruleFileLineCode/v1": "f6347ca1b90940b548d60a39df9bfdd7d58b062a9bc1553f0606d273deb708aa",
+            "glog-pfp-ruleFileCode/v1": "1973c6f923589f04066f750749906ba582e603babb4a9ac9ce1d0a854c9048e7"
           },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/Winhance.UI/Features/SoftwareApps/ViewModels/ExternalAppsViewModel.cs",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 106,
-                  "startColumn": 62,
-                  "endLine": 106,
-                  "endColumn": 138,
-                  "snippet": {
-                    "text": "            var locKey = \"ExternalApps_Category_\" + group.Key.Replace(\" \", \"\").Replace(\"&\", \"\").Replace(\",\", \"\").Replace(\"(\", \"\").Replace(\")\", \"\");"
-                  }
-                }
-              }
-            }
-          ],
           "fingerprints": {
-            "matchBasedId/v1": "9ba096b47c98a3f018f2933045f6e10bbc2a088f425c13e5bed86612f34beb90afeeb7626d698fec573ccc85b6103d6865d98161b6b033c48133e3272d440006_0"
+            "glog-fp-ruleFileCode/v1": "1973c6f923589f04066f750749906ba582e603babb4a9ac9ce1d0a854c9048e7"
           }
         },
         {
@@ -2243,7 +1039,7 @@
           "kind": "fail",
           "level": "warning",
           "message": {
-            "text": "Hardcoded cryptographic key or secret detected."
+            "text": "Detected hardcoded cryptographic key/secret vulnerability"
           },
           "locations": [
             {
@@ -2259,43 +1055,18 @@
                   "endColumn": 65,
                   "snippet": {
                     "text": "    private const string AppKey = \"Winhance-SingleInstance-Key\";"
-                  }
+                  },
+                  "sourceLanguage": "csharp"
                 }
               }
             }
           ],
-          "fingerprints": {
-            "matchBasedId/v1": "0f31532dfb89ad96f8ffc52f4239d2ae8c19ca2d18211c223c2147f8c9b84479109bd4176b595afbbfbc1166a462c2daf4a5a5c90398535a97da458efe465b68_0"
-          }
-        },
-        {
-          "ruleId": "fa9a2168-3bc2-306a-a23b-1057830a2371",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Possible hardcoded secret: variable name suggests secret material with a string literal value."
+          "partialFingerprints": {
+            "glog-pfp-ruleFileLineCode/v1": "5ab2f5e9eca321c77d69bf304deba6e7fb150ca63692bd6a17cc1ae8ae85c8ec",
+            "glog-pfp-ruleFileCode/v1": "2c52f955826248e95bce04ec3f484176e43c3c5373dc53f5aa0cecdb7f040633"
           },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/Winhance.UI/Program.cs",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 17,
-                  "startColumn": 5,
-                  "endLine": 17,
-                  "endColumn": 65,
-                  "snippet": {
-                    "text": "    private const string AppKey = \"Winhance-SingleInstance-Key\";"
-                  }
-                }
-              }
-            }
-          ],
           "fingerprints": {
-            "matchBasedId/v1": "8e16e95e800be9148c2347a002af9550ec7e2640c8348f0f2897e9daa851a98b3180c06de9cf9ec8a03585e7fdbf5b0e0fb182d89afd668454b203f4044be2e9_0"
+            "glog-fp-ruleFileCode/v1": "2c52f955826248e95bce04ec3f484176e43c3c5373dc53f5aa0cecdb7f040633"
           }
         }
       ],
