@@ -26,5 +26,7 @@ jobs:
           upload: 'true'
           github-token: ${{ secrets.PAT_TOKEN }}
           glog-token: ${{ secrets.GLOG_TOKEN }}
+          on-prem-upload: 'true'
           env: 'dev'
+          
     
