@@ -292,29 +292,6 @@
               }
             },
             {
-              "id": "96eeba81-f9ed-3b57-8167-5e2cee2fc553",
-              "name": "Potential Data Leak: Response Contains Connection String or Password Literal",
-              "helpUri": "https://www.glog.ai/",
-              "help": {
-                "text": "",
-                "markdown": "## Description\n\nThe vulnerability \"Potential Data Leak: Response Contains Connection String or Password Literal\" refers to a situation where sensitive information such as connection strings or password literals are included in the response data. This can occur when exceptions are logged with their messages, which might contain sensitive data. In the provided C# code, the exception message is being logged, which could potentially contain sensitive data.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, you should avoid logging sensitive data. If you need to log exceptions, consider logging only the exception type or sanitizing the exception message to remove any sensitive data. \n\n## Source Code Fix Recommendation\n\nInstead of logging the exception message directly, you could log the exception type:\n\n```csharp\n_logService.Log(LogLevel.Debug, $\"OTS detection: Explorer token approach failed: {ex.GetType().Name}\");\n```\n\n## Library Dependencies\n\nThe code example does not provide enough context to determine the exact library dependencies. However, it seems to be using a logging service, which might be part of a logging library such as `Microsoft.Extensions.Logging`.\n\n## References\n\n- [OWASP Top 10-2017 A3-Sensitive Data Exposure](https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure)\n- [CWE-209: Information Exposure Through an Error Message](https://cwe.mitre.org/data/definitions/209.html)"
-              },
-              "properties": {
-                "cwe": [
-                  {
-                    "id": "CWE-209",
-                    "url": "https://cwe.mitre.org/data/definitions/209.html"
-                  }
-                ],
-                "kind": "FAIL",
-                "security-severity": "5.0",
-                "tags": [
-                  "security",
-                  "CWE-209"
-                ]
-              }
-            },
-            {
               "id": "a5839118-0edd-3a50-a48b-3908a0210574",
               "name": "Possible Non-Literal URL Remote File Inclusion Vulnerability",
               "helpUri": "https://www.glog.ai/",
@@ -334,29 +311,6 @@
                 "tags": [
                   "security",
                   "CWE-98"
-                ]
-              }
-            },
-            {
-              "id": "bffab513-7456-3099-a90e-6c8ab07b246e",
-              "name": "Fixed Cryptographic Initialization Vector Vulnerability",
-              "helpUri": "https://www.glog.ai/",
-              "help": {
-                "text": "",
-                "markdown": "## Description\n\nFixed Cryptographic Initialization Vector Vulnerability refers to the insecure practice of using a fixed or hard-coded initialization vector (IV) in cryptographic operations. In C#, this vulnerability can occur when the `System.Security.Cryptography` namespace is used improperly. The initialization vector is a piece of data that is fed into the encryption algorithm to randomize the output, making it more difficult for an attacker to guess the original input. If the IV is fixed or predictable, it can lead to a reduction in the randomness of the output, making the encryption easier to break.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, it is recommended to generate a new, random IV for each encryption operation. The IV does not need to be secret, and it can be transmitted in plain text along with the ciphertext. However, it should be unpredictable and unique for each encryption operation.\n\n## Source Code Fix Recommendation\n\nHere is an example of how to generate a random IV in C#:\n\n```csharp\nusing System.Security.Cryptography;\n\npublic byte[] EncryptStringToBytes_Aes(string plainText, byte[] Key)\n{\n    // Check arguments.\n    if (plainText == null || plainText.Length <= 0)\n        throw new ArgumentNullException(\"plainText\");\n    if (Key == null || Key.Length <= 0)\n        throw new ArgumentNullException(\"Key\");\n\n    byte[] encrypted;\n\n    // Create an Aes object\n    // with the specified key and IV.\n    using (Aes aesAlg = Aes.Create())\n    {\n        aesAlg.Key = Key;\n        aesAlg.GenerateIV(); // Generate a new IV\n\n        // Create an encryptor to perform the stream transform.\n        ICryptoTransform encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);\n\n        // ... (rest of the encryption code)\n    }\n\n    return encrypted;\n}\n```\n\nIn this code, `Aes.GenerateIV()` is used to generate a new, random IV for each encryption operation.\n\n## Library Dependencies\n\n- System.Security.Cryptography\n\n## References\n\n- [OWASP - Insecure Cryptographic Storage](https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure)\n- [CWE-329: Not Using a Random IV with CBC Mode](https://cwe.mitre.org/data/definitions/329.html)"
-              },
-              "properties": {
-                "cwe": [
-                  {
-                    "id": "CWE-329",
-                    "url": "https://cwe.mitre.org/data/definitions/329.html"
-                  }
-                ],
-                "kind": "FAIL",
-                "security-severity": "5.0",
-                "tags": [
-                  "security",
-                  "CWE-329"
                 ]
               }
             },
@@ -439,41 +393,6 @@
       },
       "language": "en-US",
       "results": [
-        {
-          "ruleId": "bffab513-7456-3099-a90e-6c8ab07b246e",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Fixed Cryptographic Initialization Vector Vulnerability"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/Winhance.Core/Features/Common/Constants/FeatureIds.cs",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 13,
-                  "startColumn": 5,
-                  "endLine": 13,
-                  "endColumn": 45,
-                  "snippet": {
-                    "text": "    public const string Privacy = \"Privacy\";"
-                  },
-                  "sourceLanguage": "csharp"
-                }
-              }
-            }
-          ],
-          "partialFingerprints": {
-            "glog-pfp-ruleFileLineCode/v1": "2c3afc9bd64a7a5b921aad87a4098d04a7af798ab1efc788273ba793ef93c64a",
-            "glog-pfp-ruleFileCode/v1": "ff08dbd04490015e1c5908f96fd03c4c05553f7b63dfeda2be3b4e1dcea74bfe"
-          },
-          "fingerprints": {
-            "glog-fp-ruleFileCode/v1": "ff08dbd04490015e1c5908f96fd03c4c05553f7b63dfeda2be3b4e1dcea74bfe"
-          }
-        },
         {
           "ruleId": "f7dbc887-3728-3201-ad8c-4fd669477b7b",
           "kind": "fail",
@@ -752,41 +671,6 @@
           },
           "fingerprints": {
             "glog-fp-ruleFileCode/v1": "3de6481f38a3b35ab71a11cebc7ca29a85151bfce41c9be73009302d5beead01"
-          }
-        },
-        {
-          "ruleId": "96eeba81-f9ed-3b57-8167-5e2cee2fc553",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Potential Data Leak: Response Contains Connection String or Password Literal"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/Winhance.Infrastructure/Features/Common/Services/InteractiveUserService.cs",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 523,
-                  "startColumn": 46,
-                  "endLine": 523,
-                  "endColumn": 107,
-                  "snippet": {
-                    "text": "            _logService.Log(LogLevel.Debug, $\"OTS detection: Explorer token approach failed: {ex.Message}\");"
-                  },
-                  "sourceLanguage": "csharp"
-                }
-              }
-            }
-          ],
-          "partialFingerprints": {
-            "glog-pfp-ruleFileLineCode/v1": "67f973819ff21b0f480648135ec3dde100e5ac65ba7ac860db53bf1ba2f5ad4b",
-            "glog-pfp-ruleFileCode/v1": "95fdc5e02050d26a19184b6c5496414dc0d8cda6ed147a3b78e42e5d9298b503"
-          },
-          "fingerprints": {
-            "glog-fp-ruleFileCode/v1": "95fdc5e02050d26a19184b6c5496414dc0d8cda6ed147a3b78e42e5d9298b503"
           }
         },
         {
